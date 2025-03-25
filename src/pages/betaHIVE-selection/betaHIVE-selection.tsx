@@ -1,31 +1,49 @@
 import React from 'react';
 
+import InputSelectionCard from 'src/components/form-elements/input/input-selection';
+import NavigateButtons from 'src/components/navigate-buttons/navigate-buttons';
+
+import { useHIVEImages } from 'src/utils/hooks/useHIVEImages';
 import { useAppDispatch, useAppSelector } from 'src/stores/store';
 import { setBetaHIVESelection } from 'src/stores/reducers/story-submission';
-import { useHIVEImages } from 'src/utils/hooks/useHIVEImages';
-import HIVEGenreSquare from 'src/components/hive-genre/hive-genre-square';
-import useNavigation from 'src/utils/hooks/useNavigation';
 
 export const BetaHIVESelection: React.FC = () => {
+  const [isNextDisabled, setIsNextDisabled] = React.useState<boolean>(true);
   const dispatch = useAppDispatch();
-  const navigate = useNavigation();
   const images = useHIVEImages();
-  const { promptsCount } = useAppSelector((state) => state.adminSubmission);
+  const { minPromptSelections } = useAppSelector(
+    (state) => state.adminSubmission
+  );
+  const { betaHIVESelection } = useAppSelector(
+    (state) => state.storySubmission
+  );
 
-  const handlebetaHIVESelection = (genre: string) => {
+  React.useEffect(() => {
+    if (betaHIVESelection
+      && betaHIVESelection !== '')
+      setIsNextDisabled(false);
+  }, [betaHIVESelection]);
+
+  const handleHIVESelection = (genre: string) => {
     dispatch(setBetaHIVESelection(genre));
-    navigate('Prompt Selection');
+    setIsNextDisabled(false);
   };
 
-  const getPlural = () => 
-    `${promptsCount} prompt${promptsCount > 1 ? 's' : ''}`;
+  const getPlural = () =>
+    `${minPromptSelections} random prompt${minPromptSelections > 1 ? 's' : ''}`;
 
   return (
     <div className='container-fluid'>
       <div className='row'>
         <h1 className='bd-title pb-2 mt-4'>Story Submission</h1>
         <p className='text-muted pb-2 mt-2 fs-5'>
-          Here, you will choose your HIVE based on your selected genre. <br />You'll then create a story based on {getPlural()} from your chosen HIVE.<br />You can change any of your selections by clicking on the pencil icon next to each selection.
+          This page will guide you on submitting your story and selecting your
+          HIVE (team and genre).
+          <br />
+          Follow the prompts on each step to create a story based on{' '}
+          {getPlural()}.<br />
+          You can change your selections at any time by clicking on the pencil
+          icon next to the selection.
         </p>
       </div>
       <div className='row'>
@@ -33,15 +51,25 @@ export const BetaHIVESelection: React.FC = () => {
       </div>
       <div className='row'>
         {images.map((image, index) => (
-          <HIVEGenreSquare
-            key={image.name + index}
-            imgFluid
-            imageName={image.name.toLowerCase()}
-            imageURL={image.imgSource}
-            setbetaHIVESelection={handlebetaHIVESelection}
+          <InputSelectionCard
+            key={index}
+            handleSelection={handleHIVESelection}
+            isDisabled={false}
+            name={image.name}
+            label={image.name}
+            inputType='radio'
+            imgSource={image.imgSource}
+            description={image.description}
+            isBetaHIVE
           />
         ))}
       </div>
+      <NavigateButtons
+        isBackDisplayed={false}
+        isNextDisabled={isNextDisabled}
+        nextNavigation='Prompt Selection'
+        nextButtonText='Next'
+      />
     </div>
   );
 };

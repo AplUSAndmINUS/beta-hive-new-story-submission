@@ -39,7 +39,7 @@ $large-desktop: 1600px;
 }
 
 // card- prompt-card.tsx & content-warning.tsx
-div.w-100 > .card:hover,
+div.w-100 > .card:hover, div.w-75 > .card:hover,
 .card-selected {
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.2),

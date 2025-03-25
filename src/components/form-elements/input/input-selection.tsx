@@ -4,6 +4,9 @@ import { useAppSelector } from 'src/stores/store';
 
 interface InputSelectionCardProps {
   handleSelection: (selection: string, isChecked?: boolean) => void;
+  isBetaHIVE?: boolean;
+  imgSource?: string;
+  description?: string;
   isDisabled: boolean;
   label: string;
   name: string;
@@ -16,33 +19,37 @@ export const InputSelectionCard: React.FC<InputSelectionCardProps> = ({
   name,
   label,
   inputType,
+  isBetaHIVE = false,
+  imgSource,
+  description,
 }) => {
-  const selectedValue = useAppSelector(
-    (state) => state.storySubmission.contentWarning
-  );
   const contentSensitivities: { name: string }[] = useAppSelector((state) =>
     state.storySubmission.contentSensitivities.map((name: string) => ({ name }))
-  );
-  const isInitiallyChecked = React.useMemo(() => {
+);
+const betaHIVESelection = useAppSelector(
+  (state) => state.storySubmission.betaHIVESelection
+);
+const contentWarningSelected = useAppSelector(
+  (state) => state.storySubmission.contentWarning
+);
+
+  const isChecked = React.useMemo(() => {
+    if (isBetaHIVE) {
+      return betaHIVESelection === label;
+    }
     return inputType === 'radio'
-      ? selectedValue === label
+      ? contentWarningSelected === label
       : contentSensitivities.some(
           (item: { name: string }) => item.name === label
         );
-  }, [inputType, selectedValue, contentSensitivities, label]);
-  const [isChecked, setIsChecked] = React.useState<boolean>(isInitiallyChecked);
-
-  React.useEffect(() => {
-    if (inputType === 'radio') {
-      setIsChecked(selectedValue === label);
-    } else {
-      setIsChecked(
-        contentSensitivities.some(
-          (item: { name: string }) => item.name === label
-        )
-      );
-    }
-  }, [selectedValue, contentSensitivities, label, inputType]);
+  }, [
+    betaHIVESelection,
+    contentSensitivities,
+    contentWarningSelected,
+    inputType,
+    isBetaHIVE,
+    label,
+  ]);
 
   const handleCardClick = () => {
     if (inputType === 'radio') {
@@ -57,12 +64,12 @@ export const InputSelectionCard: React.FC<InputSelectionCardProps> = ({
 
   return (
     <div
-      className={`col-6 d-flex flex-wrap justify-content-between ${
+      className={`${isBetaHIVE ? 'col-12' : 'col-6'} d-flex flex-wrap justify-content-between ${
         !isDisabled && 'cursor-pointer'
       }`}
       onClick={handleCardClick}
     >
-      <div className='w-100'>
+      <div className={`${isBetaHIVE ? 'w-75' : 'w-100'}`}>
         <div className={`card p-2 mt-4 ${isChecked ? 'card-selected' : ''}`}>
           <div className='card-body'>
             <h5 className='card-title'>
@@ -87,7 +94,22 @@ export const InputSelectionCard: React.FC<InputSelectionCardProps> = ({
                     height: '1.5rem',
                   }}
                 />
-                <span style={{ textTransform: 'none' }}>{label}</span>
+                {isBetaHIVE ? (
+                  <>
+                    <img
+                      src={imgSource}
+                      alt={label}
+                      style={{ height: '10rem', width: '10rem' }}
+                      className={`me-4 ${isChecked ? 'img-selected' : ''}`}
+                    />
+                    <div className='d-flex flex-column'>
+                      <h3>{label}</h3>
+                      <span className='text-muted'>{description}</span>
+                    </div>
+                  </>
+                ) : (
+                  <span style={{ textTransform: 'none' }}>{label}</span>
+                )}
               </label>
             </h5>
           </div>

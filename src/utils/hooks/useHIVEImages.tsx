@@ -5,6 +5,7 @@ import { useAppSelector } from 'src/stores/store';
 interface Image {
   name: string;
   imgSource: string;
+  description: string;
 }
 
 export const useHIVEImages = () => {
@@ -22,6 +23,7 @@ export const useHIVEImages = () => {
 
     const imageArray: Image[] = betaHIVEs.map((hive) => ({
       name: hive.name,
+      description: hive.description,
       imgSource: imageMap[hive.imgSource.replace('.png', '')] || '',
     }));
 
