@@ -2,9 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
-import store from './src/stores/store';
-import { storyRoutes } from './src/routes/routes';
-import Menu from './src/components/menu/menu';
+import store from './stores/store';
+import { storyRoutes } from './routes/routes';
+import Menu from './components/menu/menu';
 
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './src/styles/_app.scss';

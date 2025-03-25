@@ -20,6 +20,12 @@ export const BetaHIVESelection: React.FC = () => {
   return (
     <div className='container-fluid'>
       <div className='row'>
+        <h1 className='bd-title pb-2 mt-4'>Story Submission</h1>
+        <p className='text-muted pb-2 mt-2 fs-5'>
+          Here, you will choose your HIVE based on your selected genre,{' '}
+        </p>
+      </div>
+      <div className='row'>
         <h1 className='bd-title pb-2 mt-4'>Choose your HIVE</h1>
       </div>
       <div className='row'>
