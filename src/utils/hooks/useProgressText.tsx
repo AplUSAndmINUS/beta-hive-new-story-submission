@@ -5,9 +5,9 @@ export const useProgressText = () => {
 
   switch (percentage) {
     case 20:
-      return 'Step 1 of 5: Genre Selection';
+      return 'Step 1 of 5: HIVE Selection';
     case 40:
-      return 'Step 2 of 5: Prompt Selection';
+      return 'Step 2 of 5: Prompt Selections';
     case 60:
       return 'Step 3 of 5: Story Submission';
     case 80:
@@ -15,7 +15,7 @@ export const useProgressText = () => {
     case 100:
       return 'Step 4 of 5: Confirmation';
     default:
-      return 'Step 1 of 5: Genre Selection';
+      return 'Step 1 of 5: HIVE Selection';
   }
 };
 

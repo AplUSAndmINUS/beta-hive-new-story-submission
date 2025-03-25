@@ -26,6 +26,10 @@ $large-desktop: 1600px;
   @media screen and (min-width: $mobile) and (max-width: $tablet) {
     padding: 2rem;
   }
+  
+  @media screen and (min-width: $tablet) {
+    padding: 3rem;
+  }
 }
 
 // start components styling

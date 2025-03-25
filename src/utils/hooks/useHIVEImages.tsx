@@ -12,11 +12,7 @@ export const useHIVEImages = () => {
   const [images, setImages] = React.useState<Image[]>([]);
 
   React.useEffect(() => {
-    const context = (require as any).context(
-      '../../assets/images',
-      false,
-      /\.png$/
-    );
+    const context = (require as any).context('src/assets', false, /\.png$/);
 
     const imageMap: { [key: string]: string } = {};
     context.keys().forEach((key: string) => {

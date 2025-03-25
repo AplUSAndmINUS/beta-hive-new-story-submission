@@ -10,19 +10,22 @@ export const BetaHIVESelection: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigation();
   const images = useHIVEImages();
-  const { betaHIVEs } = useAppSelector((state) => state.adminSubmission);
+  const { promptsCount } = useAppSelector((state) => state.adminSubmission);
 
   const handlebetaHIVESelection = (genre: string) => {
     dispatch(setBetaHIVESelection(genre));
     navigate('Prompt Selection');
   };
 
+  const getPlural = () => 
+    `${promptsCount} prompt${promptsCount > 1 ? 's' : ''}`;
+
   return (
     <div className='container-fluid'>
       <div className='row'>
         <h1 className='bd-title pb-2 mt-4'>Story Submission</h1>
         <p className='text-muted pb-2 mt-2 fs-5'>
-          Here, you will choose your HIVE based on your selected genre,{' '}
+          Here, you will choose your HIVE based on your selected genre. <br />You'll then create a story based on {getPlural()} from your chosen HIVE.<br />You can change any of your selections by clicking on the pencil icon next to each selection.
         </p>
       </div>
       <div className='row'>

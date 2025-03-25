@@ -44,7 +44,7 @@ export const Menu: React.FC<MenuProps> = ({ routes }) => {
         <div className='offcanvas-body'>
           <ul className='nav flex-column m-0 p-0'>
             {routes
-              .filter((route: any) => route.path !== undefined && route.path !== '*')
+              .filter((route: any) => route.path !== undefined && route.path !== '*' && route.path !== '/')
               .map((route: any, index: number) => (
                 <li
                   key={route.path + index.toString()}

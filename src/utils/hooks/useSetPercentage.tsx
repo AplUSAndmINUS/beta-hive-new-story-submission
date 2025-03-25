@@ -14,7 +14,7 @@ export const useSetPercentage = () => {
       case '/':
         handleSetPercentage(20);
         break;
-      case '/genre-selection':
+      case '/faqs':
         handleSetPercentage(20);
         break;
       case '/prompt-selection':

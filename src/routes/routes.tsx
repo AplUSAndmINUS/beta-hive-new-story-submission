@@ -15,6 +15,12 @@ export interface Routes extends NonIndexRouteObject {
 
 export const storyRoutes: Routes[] = [
   {
+    path: '/', // home page
+    name: 'Home',
+    element: <BetaHIVESelection />,
+    storySubmission: true,
+  },
+  {
     path: '/faqs', // story submission page's entry point
     name: 'Beta HIVE Selection',
     element: <BetaHIVESelection />,
