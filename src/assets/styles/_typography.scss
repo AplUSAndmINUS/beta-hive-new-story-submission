@@ -1,0 +1,42 @@
+// font families
+$font-family: 'Inter', 'Inter Display', -apple-system, BlinkMacSystemFont,
+  'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+$font-family-heading: 'Cardo', 'Times New Roman', serif;
+$font-family-body-text: 'Inter', 'Inter Display', -apple-system,
+  BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+
+// font-sizes
+$font-size-one-quarter: 0.25rem;
+$font-size-half: 0.5rem;
+$font-size-three-fifth: 0.6rem;
+$font-size-three-fourths: 0.75rem;
+$font-size: 1rem;
+$font-size1_25: 1.25rem;
+$font-size1_5: 1.5rem;
+$font-size1_75: 1.75rem;
+$font-size2: 2rem;
+$font-size2_5: 2.5rem;
+$font-size3: 3rem;
+$font-size4: 4rem;
+$font-size6: 5rem;
+$font-size6: 6rem;
+
+// font weights
+$font-weight-normal: normal;
+$font-weight-light: 100;
+$font-weight-bold: 600;
+$font-weight-heavy: 800;
+
+// letter spacing
+$letter-spacing-negative: -0.1px;
+$letter-spacing: 0.1px;
+$letter-spacing-high: 2px;
+$letter-spacing-max: 0.375rem;
+
+// drop-shadows
+$drop-shadow-light: 0px 3px 6px rgba(0, 0, 0, 0.33);
+$drop-shadow-dark: 0px 3px 6px rgba(0, 0, 0, 0.5);
+$drop-shadow-text-light: 1px 2px 3px rgba(0, 0, 0, 0.3);
+$drop-shadow-text: 1px 2px 3px rgba(0, 0, 0, 0.5);
+$drop-shadow-text-big: 2px 4px 4px rgba(0, 0, 0, 0.5);
+$drop-shadow-card: 0px 3px 3px 0px rgba(0, 0, 0, 0.5);

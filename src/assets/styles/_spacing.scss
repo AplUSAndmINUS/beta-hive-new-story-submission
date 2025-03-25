@@ -1,0 +1,25 @@
+// 16px base for padding and margins
+$base-1: 0.0625rem;
+$base-2: 0.125rem;
+$base-4: 0.25rem;
+$base-8: 0.5rem;
+$base-16: 1rem;
+$base-24: 1.5rem;
+$base-32: 2rem;
+$base-64: 3rem;
+$base-body: 6rem;
+
+// z-index values
+$z-index-lowest: -999;
+$z-index-low: -99;
+$z-index-0: 0;
+$z-index-1: 1;
+$z-index-med: 16;
+$z-index-high: 90;
+$z-index-highest: 999;
+
+// universal breakpoints
+$mobile: 600px;
+$tablet: 900px;
+$desktop: 1200px;
+$large-desktop: 1600px;

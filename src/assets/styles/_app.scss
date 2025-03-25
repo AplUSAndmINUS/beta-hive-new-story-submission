@@ -1,0 +1,144 @@
+@import url('./_animation.scss');
+@import url('./_colors.scss');
+@import url('./_spacing.scss');
+@import url('./_typography.scss');
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+// breakpoints
+$mobile: 600px;
+$tablet: 900px;
+$desktop: 1400px;
+$large-desktop: 1600px;
+
+// start styles
+#root {
+  background-color: transparent; // made transparent to allow WP backgrounds to come through
+  max-width: 1200px;
+}
+
+.App-Main {
+  margin: 0 auto;
+
+  @media screen and (max-width: $mobile) {
+    padding: 1rem;
+  }
+
+  @media screen and (min-width: $mobile) and (max-width: $tablet) {
+    padding: 2rem;
+  }
+}
+
+// start components styling
+// menu button icon
+.custom-icon {
+  background-image: url("data:image/svg+xml;charset=UTF8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%280, 0, 0, 1%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+// card- prompt-card.tsx & content-warning.tsx
+div.w-100 > .card:hover,
+.card-selected {
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 2px rgb(13, 110, 253);
+  transform: translate(3px, -3px);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  background-color: rgba(179, 199, 255, 0.25);
+
+  @media prefers-dark-interface {
+    box-shadow: 0 4px 8px rgba(244, 244, 244, 0.2);
+  }
+}
+
+// remove capitalization on card titles
+div.card-body > h5.card-title > label > span {
+  text-transform: none !important;
+}
+
+// generic styles
+.cursor-pointer-hover {
+  :hover {
+    cursor: pointer;
+  }
+}
+
+.hover-medium:hover {
+  font-weight: 500;
+}
+
+// hive-genre-square.tsx
+.genre-square {
+  cursor: pointer;
+}
+
+.genre-image {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.genre-square:hover .genre-image {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+// battleHIVE.tsx
+.drop-cap {
+  position: relative;
+  padding-left: 2rem !important;
+}
+
+.drop-cap::before {
+  content: '“';
+  font-size: 8rem;
+  position: absolute;
+  top: -40px;
+  left: 5px;
+  color: rgba(0, 0, 0, 0.25);
+  z-index: 1;
+}
+
+.drop-cap::after {
+  content: '“';
+  font-size: 8rem;
+  position: absolute;
+  bottom: -75px;
+  right: 5px;
+  color: rgba(0, 0, 0, 0.25);
+  z-index: 1;
+}
+
+.modal-dialog-widths {
+  min-width: 30dvw;
+  max-width: 50dvw;
+}
+
+.preserve-whitewrap {
+  white-space: pre-line;
+}
+
+// Link text
+.custom-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.custom-link:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+// table styling
+.table-fixed {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.table-fixed tbody tr td {
+  height: 100px; /* Set a fixed height for table cells */
+  vertical-align: top; /* Align content to the top */
+}
+
+.table-fixed thead th {
+  width: 14.28%; /* Ensure equal width for each column */
+}
