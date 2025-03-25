@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { useAppDispatch, useAppSelector } from 'shared/stores/store';
-import { setBetaHIVESelection } from 'shared/stores/reducers/story-submission';
-import { useHIVEImages } from 'shared/utils/hooks/useHIVEImages';
-import HIVEGenreSquare from 'shared/components/hive-genre/hive-genre-square';
-import useNavigation from 'shared/utils/hooks/useNavigation';
+import { useAppDispatch, useAppSelector } from 'src/stores/store';
+import { setBetaHIVESelection } from 'src/stores/reducers/story-submission';
+import { useHIVEImages } from 'src/utils/hooks/useHIVEImages';
+import HIVEGenreSquare from 'src/components/hive-genre/hive-genre-square';
+import useNavigation from 'src/utils/hooks/useNavigation';
 
 export const BetaHIVESelection: React.FC = () => {
   const dispatch = useAppDispatch();
