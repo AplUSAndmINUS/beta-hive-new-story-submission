@@ -70,7 +70,26 @@ interface AdminSubmissionState {
 const initialState: AdminSubmissionState = {
   battleName: 'Battle of the HIVEs',
   betaHIVECount: 3,
-  betaHIVEs: [...BETAHIVE_SELECTIONS],
+  betaHIVEs: [
+    {
+      id: '1',
+      name: 'Bumble HIVE',
+      imgSource: 'hive1.png',
+      description: 'Cozy/Romance/Meet Cute',
+    },
+    {
+      id: '2',
+      name: 'Yellow Jacket HIVE',
+      imgSource: 'hive2.png',
+      description: 'History/Mystery/Adventure',
+    },
+    {
+      id: '3',
+      name: 'The Chaos HIVE',
+      imgSource: 'hive3.png',
+      description: 'Inanimate Objects/Fantasical Creatures/Otherworld',
+    },
+  ],
   calendarEventCount: 4,
   calendarEvents: [...CALENDAR_EVENTS],
   contentWarningCount: 4,
@@ -408,7 +427,7 @@ const adminSubmissionSlice = createSlice({
       .addDefaultCase((state) => {
         state.isLoading = false;
       });
-  }
+  },
 });
 
 export const {
