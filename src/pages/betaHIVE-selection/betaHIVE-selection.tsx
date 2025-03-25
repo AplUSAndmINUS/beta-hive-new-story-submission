@@ -1,8 +1,10 @@
 import React from 'react';
+// import axios from 'axios';
 
 import InputSelectionCard from 'src/components/form-elements/input/input-selection';
 import NavigateButtons from 'src/components/navigate-buttons/navigate-buttons';
 
+import { fetchAdminData } from 'src/stores/middleware/admin-thunks';
 import { useHIVEImages } from 'src/utils/hooks/useHIVEImages';
 import { useAppDispatch, useAppSelector } from 'src/stores/store';
 import { setBetaHIVESelection } from 'src/stores/reducers/story-submission';
@@ -11,7 +13,7 @@ export const BetaHIVESelection: React.FC = () => {
   const [isNextDisabled, setIsNextDisabled] = React.useState<boolean>(true);
   const dispatch = useAppDispatch();
   const images = useHIVEImages();
-  const { minPromptSelections } = useAppSelector(
+  const { adminData, minPromptSelections } = useAppSelector(
     (state) => state.adminSubmission
   );
   const { betaHIVESelection } = useAppSelector(
@@ -19,10 +21,26 @@ export const BetaHIVESelection: React.FC = () => {
   );
 
   React.useEffect(() => {
-    if (betaHIVESelection
-      && betaHIVESelection !== '')
-      setIsNextDisabled(false);
+    if (betaHIVESelection && betaHIVESelection !== '') setIsNextDisabled(false);
   }, [betaHIVESelection]);
+
+  React.useEffect(() => {
+    // try { /*** TROUBLESHOOTING STEPS lines 28-41 ***/
+    //   dispatch(fetchAdminData()).then(() => {
+    //     if (adminData) {
+    //       console.log('Admin data fetched: ', adminData);
+    //     }
+    //   });
+    // } catch (error) {
+    //   console.error('Error fetching admin data:', error);
+    //   if (axios.isAxiosError(error)) {
+    //     console.error('Request config:', error.config);
+    //     console.error('Response status:', error.response?.status);
+    //     console.error('Response data:', error.response?.data);
+    //   }
+    // }
+    dispatch(fetchAdminData());
+  }, [dispatch]);
 
   const handleHIVESelection = (genre: string) => {
     dispatch(setBetaHIVESelection(genre));
@@ -31,6 +49,8 @@ export const BetaHIVESelection: React.FC = () => {
 
   const getPlural = () =>
     `${minPromptSelections} random prompt${minPromptSelections > 1 ? 's' : ''}`;
+
+  console.log('Admin data available: ', adminData);
 
   return (
     <div className='container-fluid'>

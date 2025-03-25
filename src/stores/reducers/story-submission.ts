@@ -11,6 +11,7 @@ interface StorySubmissionState {
   promptSelections: string[];
   storyTitle: string;
   storySubmission: string;
+  storySubmissionTitle: string;
   storySubmissionCharacterCount: number;
   storySubmissionWordCount: number;
 }
@@ -26,6 +27,7 @@ const initialState: StorySubmissionState = {
   promptSelections: [],
   storyTitle: '',
   storySubmission: '',
+  storySubmissionTitle: '',
   storySubmissionCharacterCount: 0,
   storySubmissionWordCount: 0,
 };
@@ -65,6 +67,7 @@ const storySubmissionSlice = createSlice({
       state.storySubmission = action.payload;
       state.storySubmissionCharacterCount = action.payload.length;
       state.storySubmissionWordCount = action.payload.trim().split(/\s+/).length;
+      state.storySubmissionTitle = state.storyTitle;
     },
     setStoryTitle(state, action: PayloadAction<string>) {
       state.storyTitle = action.payload;

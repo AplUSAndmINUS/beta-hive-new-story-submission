@@ -61,23 +61,6 @@ export const ContentWarnings: React.FC = () => {
     console.log('Story data:', storyData);
 
     try {
-      // const response = await fetch(
-      //   'https://your-wordpress-site.com/wp-json/beta-hive/v1/submit-story', // update with actual URL
-      //   {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify(storyData),
-      //   }
-      // );
-
-      // if (!response.ok) {
-      //   throw new Error('Failed to submit story');
-      // }
-
-      // const result = await response.json();
-      // console.log('Story submitted successfully:', result);
       navigate('Confirmation');
     } catch (error) {
       console.error('Error submitting story:', error);
