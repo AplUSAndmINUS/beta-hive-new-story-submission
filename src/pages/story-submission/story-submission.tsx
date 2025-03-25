@@ -1,13 +1,13 @@
 import React from 'react';
 
-import useDraftSave from 'shared/utils/hooks/useDraftSave';
-import SaveSpinner from 'shared/components/draft-save-spinner/draft-save-spinner';
-import Selections from 'shared/components/selections/selections';
-import NavigateButtons from 'shared/components/navigate-buttons/navigate-buttons';
-import WordCount from 'shared/components/word-count/word-count';
-import useWordCount from 'shared/utils/hooks/useWordCount';
-import { useAppSelector } from 'shared/stores/store';
-import InputType from 'shared/components/form-elements/input/input-type';
+import SaveSpinner from 'src/components/draft-save-spinner/draft-save-spinner';
+import Selections from 'src/components/selections/selections';
+import NavigateButtons from 'src/components/navigate-buttons/navigate-buttons';
+import WordCount from 'src/components/word-count/word-count';
+import InputType from 'src/components/form-elements/input/input-type';
+import { useAppSelector } from 'src/stores/store';
+import useDraftSave from 'src/utils/hooks/useDraftSave';
+import useWordCount from 'src/utils/hooks/useWordCount';
 
 export const StorySubmission: React.FC = () => {
   const { storySubmission, storySubmissionWordCount, storyTitle } =

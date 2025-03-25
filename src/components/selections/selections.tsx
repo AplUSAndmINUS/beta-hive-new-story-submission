@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { routes } from '../../../../../src/routes/routes';
-import { useAppSelector } from '../../../../../src/stores/store';
+import { storyRoutes } from 'src/routes/routes';
+import { useAppSelector } from 'src/stores/store';
 
 interface SelectionsProps {
   isStoryView?: boolean;
@@ -45,7 +45,7 @@ export const Selections: React.FC<SelectionsProps> = ({
       <div className='row d-flex justify-content-flex-start align-items-center w-50 p-0 mx-0 mb-3 text-start'>
         <Link
           to={
-            routes.filter((route) => route.name === 'Beta HIVE Selection')[0]
+            storyRoutes.filter((route) => route.name === 'Beta HIVE Selection')[0]
               .path || '/'
           }
           className='text-decoration-none custom-link'
@@ -64,7 +64,7 @@ export const Selections: React.FC<SelectionsProps> = ({
 
         <Link
           to={
-            routes.filter((route) => route.name === 'Prompt Selection')[0]
+            storyRoutes.filter((route) => route.name === 'Prompt Selection')[0]
               ?.path || '/'
           }
           className='text-decoration-none custom-link'
@@ -84,7 +84,7 @@ export const Selections: React.FC<SelectionsProps> = ({
         </Link>
         <Link
           to={
-            routes.filter((route) => route.name === 'Story Submission')[0]
+            storyRoutes.filter((route) => route.name === 'Story Submission')[0]
               .path || '/'
           }
           className='text-decoration-none custom-link'
@@ -107,7 +107,7 @@ export const Selections: React.FC<SelectionsProps> = ({
         </Link>
         <Link
           to={
-            routes.filter((route) => route.name === 'Content Warning')[0]
+            storyRoutes.filter((route) => route.name === 'Content Warning')[0]
               ?.path || '/'
           }
           className='text-decoration-none custom-link'

@@ -1,13 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 
-import { adminRoutes } from 'src/routes/admin-routes';
-import { Routes } from 'src/services/models/routes.types';
+import { Routes, storyRoutes } from 'src/routes/routes';
 
 const useNavigation = () => {
   const navigate = useNavigate();
 
   const handleNavigation = (name: string) => {
-    const route = adminRoutes.find((route: Routes) => route.name === name);
+    const route = storyRoutes.find((route: Routes) => route.name === name);
 
     if (!route) {
       throw new Error(`Route with name ${name} not found`);

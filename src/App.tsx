@@ -7,7 +7,7 @@ import { storyRoutes } from './routes/routes';
 import Menu from './components/menu/menu';
 
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import './src/styles/_app.scss';
+import 'src/styles/_app.scss';
 
 const App: React.FC = () => {
   return (

@@ -1,8 +1,7 @@
-import { feedbackSchema } from '../models/battleHIVE.types';
-import { calendarSchema } from '../models/calendar.types';
-import { characterSchema } from '../models/prompt-selection.types';
-import { contentWarningsSchema } from '../models/content-warnings.types';
-import { promptsSchema, settingSchema } from '../models/prompt-selection.types';
+import { feedbackSchema } from 'src/services/models/battleHIVE.types';
+import { calendarSchema } from 'src/services/models/calendar.types';
+import { characterSchema, promptsSchema, settingSchema } from 'src/services/models/prompt-selection.types';
+import { contentWarningsSchema } from 'src/services/models/content-warnings.types';
 
 export const CALENDAR_EVENTS: calendarSchema[] = [
   {

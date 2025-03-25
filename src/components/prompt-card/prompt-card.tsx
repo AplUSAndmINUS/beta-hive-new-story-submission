@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useAppSelector } from '../../../../../src/stores/store';
+import { useAppSelector } from 'src/stores/store';
 interface PromptCardProps {
   handleSelection: (selection: string) => void;
   isStorySelection?: boolean;

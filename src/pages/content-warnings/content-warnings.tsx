@@ -1,17 +1,17 @@
 import React from 'react';
 import moment from 'moment';
 
-import Modal from 'shared/components/modal/modal';
-import NavigationButtons from 'shared/components/navigate-buttons/navigate-buttons';
-import InputSelectionCard from 'shared/components/form-elements/input/input-selection';
-import Selections from 'shared/components/selections/selections';
-import { useAppDispatch, useAppSelector } from 'shared/stores/store';
+import Modal from 'src/components/modal/modal';
+import NavigationButtons from 'src/components/navigate-buttons/navigate-buttons';
+import InputSelectionCard from 'src/components/form-elements/input/input-selection';
+import Selections from 'src/components/selections/selections';
+import { useAppDispatch, useAppSelector } from 'src/stores/store';
 import {
   setContentSensitivities,
   setIsContentWarning,
-} from 'shared/stores/reducers/story-submission';
-import { CONTENT_WARNINGS } from 'shared/services/constants/admin-constants';
-import useNavigation from 'shared/utils/hooks/useNavigation';
+} from 'src/stores/reducers/story-submission';
+import { CONTENT_WARNINGS } from 'src/services/constants/admin-constants';
+import useNavigation from 'src/utils/hooks/useNavigation';
 
 export const ContentWarnings: React.FC = () => {
   const dispatch = useAppDispatch();

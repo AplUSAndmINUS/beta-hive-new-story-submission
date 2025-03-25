@@ -1,5 +1,5 @@
-import { betaHIVESchema } from '../models/betaHIVE-selection.types';
-import { storySchema } from '../models/battleHIVE.types';
+import { betaHIVESchema } from 'src/services/models/betaHIVE-selection.types';
+import { storySchema } from 'src/services/models/battleHIVE.types';
 import {
   CONTENT_WARNINGS,
   FEEDBACK_SUBMISSIONS,

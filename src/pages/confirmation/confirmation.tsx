@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { useAppSelector } from 'shared/stores/store';
-import Selections from 'shared/components/selections/selections';
-import useNavigation from 'shared/utils/hooks/useNavigation';
+import { useAppSelector } from 'src/stores/store';
+import Selections from 'src/components/selections/selections';
+import useNavigation from 'src/utils/hooks/useNavigation';
 
 export const Confirmation: React.FC = () => {
   const { storySubmission } = useAppSelector((state) => state.storySubmission);
