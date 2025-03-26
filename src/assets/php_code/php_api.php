@@ -486,19 +486,19 @@ function get_all_game_content() {
 // Function to get all content warnings
 function get_all_content_warnings() {
     $content_warnings = get_option('content_warnings', array());
-    return array_unique($content_warnings);
+    return $content_warnings;
 }
 
 // Function to get all prompts
 function get_all_prompts() {
     $prompts = get_option('prompts', array());
-    return array_unique($prompts);
+    return $prompts;
 }
 
 // Function to get all HIVEs
 function get_all_hives() {
     $hives = get_option('hives', array());
-    return array_unique($hives);
+    return $hives;
 }
 
 // Function to get all calendar events
