@@ -9,6 +9,19 @@ $mobile: 600px;
 $tablet: 900px;
 $desktop: 1400px;
 $large-desktop: 1600px;
+$font-family: 'Inter', 'Arial', 'Helvetica Neue', sans-serif !important;
+$font-family-monospace: 'Fira Code', 'Courier New', monospace;
+
+p,
+input,
+button,
+select {
+  font-family: $font-family;
+}
+
+textarea {
+  font-family: $font-family-monospace;
+}
 
 // start styles
 #root {
@@ -26,7 +39,7 @@ $large-desktop: 1600px;
   @media screen and (min-width: $mobile) and (max-width: $tablet) {
     padding: 2rem;
   }
-  
+
   @media screen and (min-width: $tablet) {
     padding: 3rem;
   }
@@ -39,7 +52,8 @@ $large-desktop: 1600px;
 }
 
 // card- prompt-card.tsx & content-warning.tsx
-div.w-100 > .card:hover, div.w-75 > .card:hover,
+div.w-100 > .card:hover,
+div.w-75 > .card:hover,
 .card-selected {
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.2),

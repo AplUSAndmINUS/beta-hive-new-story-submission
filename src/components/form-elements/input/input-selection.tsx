@@ -72,7 +72,7 @@ const contentWarningSelected = useAppSelector(
       <div className={`${isBetaHIVE ? 'w-75' : 'w-100'}`}>
         <div className={`card p-2 mt-4 ${isChecked ? 'card-selected' : ''}`}>
           <div className='card-body'>
-            <h5 className='card-title'>
+            <h5 className='card-title' style={{ textTransform: 'none' }}>
               <label
                 className='d-flex align-items-center'
                 style={{

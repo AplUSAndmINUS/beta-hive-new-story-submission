@@ -18,7 +18,7 @@ export const useHIVEImages = () => {
     const imageMap: { [key: string]: string } = {};
     context.keys().forEach((key: string) => {
       const name = key.replace('./', '').replace('.png', '');
-      imageMap[name] = context(key);
+      imageMap[name] = context(key).default || context(key);
     });
 
     const imageArray: Image[] = betaHIVEs.map((hive) => ({
