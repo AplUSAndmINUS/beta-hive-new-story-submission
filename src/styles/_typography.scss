@@ -1,9 +1,10 @@
 // font families
 $font-family: 'Inter', 'Inter Display', -apple-system, BlinkMacSystemFont,
-  'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+  'Roboto', 'Helvetica Neue', 'Arial', sans-serif !important;
 $font-family-heading: 'Cardo', 'Times New Roman', serif;
 $font-family-body-text: 'Inter', 'Inter Display', -apple-system,
   BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+$font-family-monospace: 'Fira Code', 'Courier New', monospace;
 
 // font-sizes
 $font-size-one-quarter: 0.25rem;
