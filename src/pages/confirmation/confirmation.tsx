@@ -1,39 +1,60 @@
 import React from 'react';
-
 import { useAppSelector } from 'src/stores/store';
 import Selections from 'src/components/selections/selections';
-import useNavigation from 'src/utils/hooks/useNavigation';
 
-export const Confirmation: React.FC = () => {
-  const { storySubmission } = useAppSelector((state) => state.storySubmission);
-  const navigate = useNavigation();
+const Confirmation: React.FC = () => {
+  const { title, story, HIVE, prompts, isContentSensitive, contentWarnings } =
+    useAppSelector((state) => state.storySubmission);
 
-  // console.log('New story: ', storySubmission);
   return (
     <div className='container-fluid'>
       <div className='row d-flex justify-content-between align-items-center'>
-        <div className='col d-flex flex-column justify-content-start align-items-left'>
-          <h1 className='bd-title pb-2 mt-4'>Confirmation</h1>
+        <div className='col'>
+          <h1 className='bd-title pb-2 mt-4'>Story Submission Confirmation</h1>
           <p className='text-muted pb-2 mt-2 fs-5'>
-            Thank you! Your story has been submitted and is pending review.
+            Please review your story details before final submission.
           </p>
-          <Selections />
         </div>
-        <div className='row'>
-          <h3 className='text-muted pb-2 mt-2 fs-5'>Story:</h3>
-          <p>
-            {storySubmission ||
-              `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec
-            purus ac libero ultricies aliquam. Nullam nec purus ac libero
-            ultricies aliquam.`}
-          </p>
-          <div className='d-flex justify-content-start'>
-            <button
-              className='btn btn-primary mt-4 mr-4'
-              onClick={() => navigate('Beta HIVE Page')}
-            >
-              Go to your Beta HIVE
-            </button>
+        <Selections />
+      </div>
+      <div className='row mt-4'>
+        <div className='col-md-8'>
+          <h3>Story Title</h3>
+          <p>{title}</p>
+        </div>
+        <div className='col-md-4'>
+          <h3>HIVE</h3>
+          <p>{HIVE}</p>
+        </div>
+      </div>
+      <div className='row mt-4'>
+        <div className='col-12'>
+          <h3>Prompts</h3>
+          <ul>
+            {prompts.map((prompt, index) => (
+              <li key={index}>{prompt}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div className='row mt-4'>
+        <div className='col-12'>
+          <h3>Content Warnings</h3>
+          <p>{isContentSensitive ? 'Yes' : 'No'}</p>
+          {isContentSensitive && contentWarnings.length > 0 && (
+            <ul>
+              {contentWarnings.map((warning, index) => (
+                <li key={index}>{warning}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+      <div className='row mt-4'>
+        <div className='col-12'>
+          <h3>Story Preview</h3>
+          <div className='border p-3 bg-light'>
+            <p>{story}</p>
           </div>
         </div>
       </div>

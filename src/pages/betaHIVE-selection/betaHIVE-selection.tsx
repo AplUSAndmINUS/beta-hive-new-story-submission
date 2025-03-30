@@ -7,7 +7,7 @@ import NavigateButtons from 'src/components/navigate-buttons/navigate-buttons';
 import { fetchAdminData } from 'src/stores/middleware/admin-thunks';
 import { useHIVEImages } from 'src/utils/hooks/useHIVEImages';
 import { useAppDispatch, useAppSelector } from 'src/stores/store';
-import { setBetaHIVESelection } from 'src/stores/reducers/story-submission';
+import { setHIVE } from 'src/stores/reducers/story-submission';
 
 export const BetaHIVESelection: React.FC = () => {
   const [isNextDisabled, setIsNextDisabled] = React.useState<boolean>(true);
@@ -16,13 +16,11 @@ export const BetaHIVESelection: React.FC = () => {
   const { minPromptSelections } = useAppSelector(
     (state) => state.adminSubmission
   );
-  const { betaHIVESelection } = useAppSelector(
-    (state) => state.storySubmission
-  );
+  const { HIVE } = useAppSelector((state) => state.storySubmission);
 
   React.useEffect(() => {
-    if (betaHIVESelection && betaHIVESelection !== '') setIsNextDisabled(false);
-  }, [betaHIVESelection]);
+    if (HIVE && HIVE !== '') setIsNextDisabled(false);
+  }, [HIVE]);
 
   React.useEffect(() => {
     // try { /*** TROUBLESHOOTING STEPS lines 28-41 ***/
@@ -46,7 +44,7 @@ export const BetaHIVESelection: React.FC = () => {
     // Validate that the selected genre exists in the available images
     const isValidHIVE = images.some((image) => image.name === genre);
     if (isValidHIVE) {
-      dispatch(setBetaHIVESelection(genre));
+      dispatch(setHIVE(genre));
       setIsNextDisabled(false);
     }
   };

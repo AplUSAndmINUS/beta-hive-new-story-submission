@@ -7,10 +7,10 @@ import InputSelectionCard from 'src/components/form-elements/input/input-selecti
 import Selections from 'src/components/selections/selections';
 import { useAppDispatch, useAppSelector } from 'src/stores/store';
 import {
-  setContentSensitivities,
-  setIsContentWarning,
+  setContentWarnings,
+  setContentSensitive,
 } from 'src/stores/reducers/story-submission';
-import { CONTENT_WARNINGS } from 'src/services/constants/admin-constants';
+import { fetchAdminData } from 'src/stores/middleware/admin-thunks';
 import useNavigation from 'src/utils/hooks/useNavigation';
 import { addStory } from 'src/services/apis/stories-apis';
 
@@ -24,31 +24,33 @@ export const ContentWarnings: React.FC = () => {
   const [showModal, setShowModal] = React.useState(false);
   const [isErrorModal, setIsErrorModal] = React.useState(false);
 
-  const {
-    contentSensitivities,
-    contentWarning,
-    betaHIVESelection,
-    promptSelections,
-    storySubmission,
-    storyTitle,
-  } = useAppSelector((state) => state.storySubmission);
+  const { contentWarnings, isContentSensitive, HIVE, prompts, story, title } =
+    useAppSelector((state) => state.storySubmission);
 
-  const { minWordCount, maxWordCount } = useAppSelector(
-    (state) => state.adminSubmission
-  );
+  const {
+    minWordCount,
+    maxWordCount,
+    contentWarnings: availableWarnings,
+  } = useAppSelector((state) => state.adminSubmission);
+
+  React.useEffect(() => {
+    if (!availableWarnings || availableWarnings.length === 0) {
+      dispatch(fetchAdminData());
+    }
+  }, [dispatch, availableWarnings]);
 
   React.useEffect(() => {
     const errors: string[] = [];
-    const wordCount = storySubmission.trim().split(/\s+/).length;
+    const wordCount = story.trim().split(/\s+/).length;
 
     // Validate all required fields
-    if (!betaHIVESelection) {
+    if (!HIVE) {
       errors.push('HIVE selection is required');
     }
-    if (!promptSelections || promptSelections.length === 0) {
+    if (!prompts || prompts.length === 0) {
       errors.push('Prompt selections are required');
     }
-    if (!storyTitle) {
+    if (!title) {
       errors.push('Story title is required');
     }
     if (wordCount < minWordCount) {
@@ -59,13 +61,11 @@ export const ContentWarnings: React.FC = () => {
     }
 
     // Content warning validation
-    if (!contentWarning) {
-      errors.push('Please specify if your story has content warnings');
-    } else if (contentWarning === 'Yes' && contentSensitivities.length === 0) {
+    if (isContentSensitive && contentWarnings.length === 0) {
       errors.push('Please select at least one content warning');
     } else if (
-      contentWarning === 'Yes' &&
-      contentSensitivities.length > MAX_CONTENT_WARNINGS
+      isContentSensitive &&
+      contentWarnings.length > MAX_CONTENT_WARNINGS
     ) {
       errors.push(`Maximum ${MAX_CONTENT_WARNINGS} content warnings allowed`);
     }
@@ -73,12 +73,12 @@ export const ContentWarnings: React.FC = () => {
     setValidationErrors(errors);
     setIsSubmitDisabled(errors.length > 0);
   }, [
-    betaHIVESelection,
-    promptSelections,
-    storySubmission,
-    storyTitle,
-    contentWarning,
-    contentSensitivities.length,
+    HIVE,
+    prompts,
+    story,
+    title,
+    isContentSensitive,
+    contentWarnings.length,
     minWordCount,
     maxWordCount,
   ]);
@@ -87,16 +87,17 @@ export const ContentWarnings: React.FC = () => {
     e.preventDefault();
 
     const storyData = {
-      title: storyTitle,
-      story: storySubmission,
+      title,
+      story,
       author: 'Author ID', // This should come from user authentication
-      HIVE: betaHIVESelection,
-      prompts: promptSelections,
-      isContentSensitive: contentWarning === 'Yes',
-      contentWarnings: contentSensitivities,
+      HIVE,
+      prompts,
+      isContentSensitive,
+      contentWarnings,
       battleName: 'Battle of the HIVEs', // This should come from admin settings
-      wordCount: storySubmission.trim().split(/\s+/).length,
-      status: 'draft',
+      wordCount: story.trim().split(/\s+/).length,
+      characterCount: story.length,
+      status: 'Draft' as const,
     };
 
     try {
@@ -114,9 +115,9 @@ export const ContentWarnings: React.FC = () => {
   };
 
   const handleContentWarningRadio = (label: string) => {
-    dispatch(setIsContentWarning(label));
+    dispatch(setContentSensitive(label === 'Yes'));
     if (label === 'No') {
-      dispatch(setContentSensitivities([]));
+      dispatch(setContentWarnings([]));
     }
   };
 
@@ -124,20 +125,20 @@ export const ContentWarnings: React.FC = () => {
     contentName: string,
     isChecked?: boolean
   ) => {
-    if (contentWarning === 'Yes') {
-      const currentSensitivities = new Set(contentSensitivities);
+    if (isContentSensitive) {
+      const currentWarnings = new Set(contentWarnings);
 
       if (isChecked) {
-        if (currentSensitivities.has(contentName)) {
-          currentSensitivities.delete(contentName);
-        } else if (currentSensitivities.size < MAX_CONTENT_WARNINGS) {
-          currentSensitivities.add(contentName);
+        if (currentWarnings.has(contentName)) {
+          currentWarnings.delete(contentName);
+        } else if (currentWarnings.size < MAX_CONTENT_WARNINGS) {
+          currentWarnings.add(contentName);
         }
       } else {
-        currentSensitivities.delete(contentName);
+        currentWarnings.delete(contentName);
       }
 
-      dispatch(setContentSensitivities(Array.from(currentSensitivities)));
+      dispatch(setContentWarnings(Array.from(currentWarnings)));
     }
   };
 
@@ -184,26 +185,26 @@ export const ContentWarnings: React.FC = () => {
           handleSelection={handleContentWarningRadio}
         />
       </div>
-      <div className={`row mt-5 ${contentWarning !== 'Yes' && 'opacity-25'}`}>
+      <div className={`row mt-5 ${!isContentSensitive && 'opacity-25'}`}>
         <h3 className='pb-2 mt-5'>
           Content Sensitivities
-          {contentWarning === 'Yes' && (
+          {isContentSensitive && (
             <small className='text-muted ms-2'>
               (Select up to {MAX_CONTENT_WARNINGS})
             </small>
           )}
         </h3>
-        {CONTENT_WARNINGS.map((content, index) => (
+        {availableWarnings.map((warning, index) => (
           <InputSelectionCard
-            key={content.name + index}
-            name={content.name}
+            key={warning.id || index}
+            name={warning.name}
             inputType='checkbox'
             isDisabled={
-              contentWarning !== 'Yes' ||
-              (contentSensitivities.length >= MAX_CONTENT_WARNINGS &&
-                !contentSensitivities.includes(content.name))
+              !isContentSensitive ||
+              (contentWarnings.length >= MAX_CONTENT_WARNINGS &&
+                !contentWarnings.includes(warning.name))
             }
-            label={content.name}
+            label={warning.name}
             handleSelection={handleContentSensitivities}
           />
         ))}

@@ -6,31 +6,25 @@ import NavigateButtons from 'src/components/navigate-buttons/navigate-buttons';
 import WordCount from 'src/components/word-count/word-count';
 import InputType from 'src/components/form-elements/input/input-type';
 import { useAppDispatch, useAppSelector } from 'src/stores/store';
-import {
-  setStorySubmission,
-  setStoryTitle,
-} from 'src/stores/reducers/story-submission';
+import { setStory, setTitle } from 'src/stores/reducers/story-submission';
 import useDraftSave from 'src/utils/hooks/useDraftSave';
 import useWordCount from 'src/utils/hooks/useWordCount';
+import { fetchAdminData } from 'src/stores/middleware/admin-thunks';
 
 const MIN_TITLE_LENGTH = 3;
 const MAX_TITLE_LENGTH = 100;
 
 export const StorySubmission: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { storySubmission, storyTitle } = useAppSelector(
-    (state) => state.storySubmission
-  );
+  const { story, title } = useAppSelector((state) => state.storySubmission);
   const { minWordCount, maxWordCount } = useAppSelector(
     (state) => state.adminSubmission
   );
 
   const [isNextDisabled, setIsNextDisabled] = React.useState(true);
   const [validationErrors, setValidationErrors] = React.useState<string[]>([]);
-  const [storyText, setStoryText] = React.useState(storySubmission || '');
-  const [storyTitleState, setStoryTitleState] = React.useState(
-    storyTitle || ''
-  );
+  const [storyText, setStoryText] = React.useState(story || '');
+  const [storyTitleState, setStoryTitleState] = React.useState(title || '');
 
   const { error, isLoading, isSaved } = useDraftSave(
     storyText,
@@ -39,14 +33,20 @@ export const StorySubmission: React.FC = () => {
   const userWordCount = useWordCount(storyText);
 
   React.useEffect(() => {
+    if (!minWordCount || !maxWordCount) {
+      dispatch(fetchAdminData());
+    }
+  }, [dispatch, minWordCount, maxWordCount]);
+
+  React.useEffect(() => {
     // Update Redux store when local state changes
-    if (storyText !== storySubmission) {
-      dispatch(setStorySubmission(storyText));
+    if (storyText !== story) {
+      dispatch(setStory(storyText));
     }
-    if (storyTitleState !== storyTitle) {
-      dispatch(setStoryTitle(storyTitleState));
+    if (storyTitleState !== title) {
+      dispatch(setTitle(storyTitleState));
     }
-  }, [storyText, storyTitleState, dispatch, storySubmission, storyTitle]);
+  }, [storyText, storyTitleState, dispatch, story, title]);
 
   React.useEffect(() => {
     // Validate form and collect all validation errors

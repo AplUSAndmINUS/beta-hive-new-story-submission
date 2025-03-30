@@ -4,32 +4,33 @@ import NavigateButtons from 'src/components/navigate-buttons/navigate-buttons';
 import PromptCard from 'src/components/prompt-card/prompt-card';
 import Selections from 'src/components/selections/selections';
 import { useAppDispatch, useAppSelector } from 'src/stores/store';
-import {
-  // setCharacterSelection,
-  // setSettingSelection,
-  setPromptSelections,
-} from 'src/stores/reducers/story-submission';
-import { PROMPT_SELECTIONS } from 'src/services/constants/admin-constants';
-// import { CHARACTER_SELECTIONS, SETTING_SELECTIONS } from '../../services/constants/constants';
+import { setPrompts } from 'src/stores/reducers/story-submission';
+import { fetchAdminData } from 'src/stores/middleware/admin-thunks';
 
 export const PromptSelection: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { promptSelections } = useAppSelector((state) => state.storySubmission);
-  const { minPromptSelections } = useAppSelector(
+  const { prompts: selectedPrompts } = useAppSelector(
+    (state) => state.storySubmission
+  );
+  const { minPromptSelections, prompts } = useAppSelector(
     (state) => state.adminSubmission
   );
 
+  React.useEffect(() => {
+    if (!prompts || prompts.length === 0) {
+      dispatch(fetchAdminData());
+    }
+  }, [dispatch, prompts]);
+
   const handlePromptSelection = (selection: string) => {
-    if (promptSelections.includes(selection)) {
+    if (selectedPrompts.includes(selection)) {
       // Remove prompt if already selected
       dispatch(
-        setPromptSelections(
-          promptSelections.filter((prompt) => prompt !== selection)
-        )
+        setPrompts(selectedPrompts.filter((prompt) => prompt !== selection))
       );
-    } else if (promptSelections.length < minPromptSelections) {
+    } else if (selectedPrompts.length < minPromptSelections) {
       // Add prompt if under minimum limit
-      dispatch(setPromptSelections([...promptSelections, selection]));
+      dispatch(setPrompts([...selectedPrompts, selection]));
     }
   };
 
@@ -43,11 +44,11 @@ export const PromptSelection: React.FC = () => {
   // };
 
   const getSelectionText = () => {
-    const remaining = minPromptSelections - promptSelections.length;
+    const remaining = minPromptSelections - selectedPrompts.length;
     if (remaining > 0) {
       return `Select ${remaining} more prompt${remaining > 1 ? 's' : ''}`;
     }
-    return `Selected ${promptSelections.length} of ${minPromptSelections} prompts`;
+    return `Selected ${selectedPrompts.length} of ${minPromptSelections} prompts`;
   };
 
   return (
@@ -83,22 +84,22 @@ export const PromptSelection: React.FC = () => {
             handleSelection={handleSettingSelection}
           />
         ))} */}
-        {PROMPT_SELECTIONS.map((prompt, index) => (
+        {prompts.map((prompt, index) => (
           <PromptCard
-            key={prompt.name + index}
+            key={prompt.id || index}
             prompt={prompt.name}
             promptText={prompt.description}
             handleSelection={handlePromptSelection}
             isDisabled={
-              promptSelections.length >= minPromptSelections &&
-              !promptSelections.includes(prompt.name)
+              selectedPrompts.length >= minPromptSelections &&
+              !selectedPrompts.includes(prompt.name)
             }
           />
         ))}
       </div>
       <div className='row'>
         <NavigateButtons
-          isNextDisabled={promptSelections.length < minPromptSelections}
+          isNextDisabled={selectedPrompts.length < minPromptSelections}
           backNavigation='Beta HIVE Selection'
           nextNavigation='Story Submission'
         />
