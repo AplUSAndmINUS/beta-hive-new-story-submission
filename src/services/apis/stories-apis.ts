@@ -1,6 +1,16 @@
-import { axiosInstance } from './admin-apis';
 import axios from 'axios';
+
+import { axiosInstance, waitForNonce } from './admin-apis';
 import { storySchema } from 'src/services/models/battleHIVE.types';
+
+// Declare the WordPress API settings type
+declare global {
+  interface Window {
+    wpApiSettings?: {
+      nonce: string;
+    };
+  }
+}
 
 export interface StoryData {
   title: string;
@@ -20,6 +30,7 @@ export const addStory = async (
   story: Omit<storySchema, 'id' | 'feedback' | 'wins' | 'losses'>
 ): Promise<storySchema> => {
   try {
+    await waitForNonce();
     console.log('Attempting to add story:', {
       title: story.title,
       HIVE: story.HIVE,
@@ -60,9 +71,11 @@ export const addStory = async (
   } catch (error) {
     console.error('Error adding story:', error);
     if (axios.isAxiosError(error)) {
-      console.error('Request config:', error.config);
-      console.error('Response status:', error.response?.status);
-      console.error('Response data:', error.response?.data);
+      console.error('Axios error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers,
+      });
     }
     throw new Error('Failed to add story. Please try again.');
   }
@@ -71,6 +84,7 @@ export const addStory = async (
 // Function to update existing story
 export const updateStory = async (story: storySchema): Promise<storySchema> => {
   try {
+    await waitForNonce();
     console.log('Attempting to update story:', {
       id: story.id,
       title: story.title,
@@ -112,9 +126,11 @@ export const updateStory = async (story: storySchema): Promise<storySchema> => {
   } catch (error) {
     console.error('Error updating story:', error);
     if (axios.isAxiosError(error)) {
-      console.error('Request config:', error.config);
-      console.error('Response status:', error.response?.status);
-      console.error('Response data:', error.response?.data);
+      console.error('Axios error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers,
+      });
     }
     throw new Error('Failed to update story. Please try again.');
   }
@@ -123,6 +139,7 @@ export const updateStory = async (story: storySchema): Promise<storySchema> => {
 // Function to get story by ID
 export const getStory = async (id: string): Promise<storySchema> => {
   try {
+    await waitForNonce();
     console.log('Attempting to fetch story with ID:', id);
 
     const response = await axiosInstance.get(`/stories/${id}`);
@@ -141,9 +158,11 @@ export const getStory = async (id: string): Promise<storySchema> => {
   } catch (error) {
     console.error('Error fetching story:', error);
     if (axios.isAxiosError(error)) {
-      console.error('Request config:', error.config);
-      console.error('Response status:', error.response?.status);
-      console.error('Response data:', error.response?.data);
+      console.error('Axios error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers,
+      });
     }
     throw new Error('Failed to fetch story. Please try again.');
   }
