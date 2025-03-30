@@ -21,12 +21,14 @@ export const PromptSelection: React.FC = () => {
 
   const handlePromptSelection = (selection: string) => {
     if (promptSelections.includes(selection)) {
+      // Remove prompt if already selected
       dispatch(
         setPromptSelections(
           promptSelections.filter((prompt) => prompt !== selection)
         )
       );
-    } else {
+    } else if (promptSelections.length < minPromptSelections) {
+      // Add prompt if under minimum limit
       dispatch(setPromptSelections([...promptSelections, selection]));
     }
   };
@@ -40,13 +42,23 @@ export const PromptSelection: React.FC = () => {
   //   dispatch(setSettingSelection(setting));
   // };
 
+  const getSelectionText = () => {
+    const remaining = minPromptSelections - promptSelections.length;
+    if (remaining > 0) {
+      return `Select ${remaining} more prompt${remaining > 1 ? 's' : ''}`;
+    }
+    return `Selected ${promptSelections.length} of ${minPromptSelections} prompts`;
+  };
+
   return (
     <div className='container-fluid'>
       <div className='row d-flex justify-content-between align-items-center'>
         <div className='col'>
-          <h1 className='bd-title pb-2 mt-4'>Choose two prompts</h1>
+          <h1 className='bd-title pb-2 mt-4'>
+            Choose {minPromptSelections} prompts
+          </h1>
           <p className='text-muted pb-2 mt-2 fs-5'>
-            Select two prompts from the following prompts.
+            {getSelectionText()}
             <br />
             You'll use these to create your story.
           </p>
@@ -54,7 +66,7 @@ export const PromptSelection: React.FC = () => {
         <Selections />
       </div>
       <div className='row'>
-        <h3 className='pb-2 mt-3'>Prompts</h3>
+        <h3 className='pb-2 mt-3'>Available Prompts</h3>
         {/* {CHARACTER_SELECTIONS.map((character, index) => (
           <PromptCard
             key={character.name + index}
@@ -77,6 +89,10 @@ export const PromptSelection: React.FC = () => {
             prompt={prompt.name}
             promptText={prompt.description}
             handleSelection={handlePromptSelection}
+            isDisabled={
+              promptSelections.length >= minPromptSelections &&
+              !promptSelections.includes(prompt.name)
+            }
           />
         ))}
       </div>

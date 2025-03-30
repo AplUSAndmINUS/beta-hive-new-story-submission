@@ -6,6 +6,7 @@ interface PromptCardProps {
   isStorySelection?: boolean;
   prompt: string;
   promptText?: string;
+  isDisabled?: boolean;
 }
 
 export const PromptCard: React.FC<PromptCardProps> = ({
@@ -13,6 +14,7 @@ export const PromptCard: React.FC<PromptCardProps> = ({
   isStorySelection,
   prompt,
   promptText,
+  isDisabled = false,
 }) => {
   const { promptSelections } = useAppSelector((state) => state.storySubmission);
 
@@ -23,13 +25,17 @@ export const PromptCard: React.FC<PromptCardProps> = ({
     <div
       className='col-6 d-flex flex-wrap justify-content-between'
       onClick={
-        isStorySelection
-          ? () => handleSelection('')
-          : () => handleSelection(prompt)
+        isDisabled
+          ? undefined
+          : isStorySelection
+            ? () => handleSelection('')
+            : () => handleSelection(prompt)
       }
     >
       <div className='w-100 me-3'>
-        <div className={`card p-2 mt-4 ${isSelected && 'card-selected'}`}>
+        <div
+          className={`card p-2 mt-4 ${isSelected && 'card-selected'} ${isDisabled && 'opacity-50'}`}
+        >
           <div className='card-body'>
             <h5 className='card-title'>{prompt}</h5>
             <p className='card-text'>

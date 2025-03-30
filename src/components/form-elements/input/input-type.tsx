@@ -19,6 +19,9 @@ interface InputTypeProps {
   placeholder?: string;
   valueDesc?: string;
   type?: string;
+  error?: string;
+  isTouched?: boolean;
+  onBlur?: () => void;
 }
 
 export const InputType: React.FC<InputTypeProps> = ({
@@ -40,6 +43,9 @@ export const InputType: React.FC<InputTypeProps> = ({
   placeholder,
   valueDesc,
   type,
+  error,
+  isTouched,
+  onBlur,
 }) => {
   return (
     <div
@@ -60,13 +66,13 @@ export const InputType: React.FC<InputTypeProps> = ({
                   {isRequired && <span className='text-danger'> *</span>}
                 </span>
                 <input
-                  className='form-control mt-3'
+                  className={`form-control mt-3 ${error && isTouched ? 'is-invalid' : ''}`}
                   disabled={isDisabled}
                   value={value || ''}
                   onChange={onChange}
+                  onBlur={onBlur}
                   type={type}
-                  min={min}
-                  max={max}
+                  {...(type === 'number' && { min, max, pattern })}
                   pattern={pattern}
                   placeholder={placeholder}
                   required={isRequired}
@@ -77,6 +83,9 @@ export const InputType: React.FC<InputTypeProps> = ({
                     height: '2rem',
                   }}
                 />
+                {error && isTouched && (
+                  <div className='invalid-feedback d-block'>{error}</div>
+                )}
               </label>
             </h5>
             {isCalendar && (

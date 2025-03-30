@@ -5,54 +5,77 @@ import Selections from 'src/components/selections/selections';
 import NavigateButtons from 'src/components/navigate-buttons/navigate-buttons';
 import WordCount from 'src/components/word-count/word-count';
 import InputType from 'src/components/form-elements/input/input-type';
-import { useAppSelector } from 'src/stores/store';
+import { useAppDispatch, useAppSelector } from 'src/stores/store';
+import {
+  setStorySubmission,
+  setStoryTitle,
+} from 'src/stores/reducers/story-submission';
 import useDraftSave from 'src/utils/hooks/useDraftSave';
 import useWordCount from 'src/utils/hooks/useWordCount';
 
+const MIN_TITLE_LENGTH = 3;
+const MAX_TITLE_LENGTH = 100;
+
 export const StorySubmission: React.FC = () => {
-  const { storySubmission, storySubmissionWordCount, storyTitle } =
-    useAppSelector((state) => state.storySubmission);
+  const dispatch = useAppDispatch();
+  const { storySubmission, storyTitle } = useAppSelector(
+    (state) => state.storySubmission
+  );
+  const { minWordCount, maxWordCount } = useAppSelector(
+    (state) => state.adminSubmission
+  );
+
   const [isNextDisabled, setIsNextDisabled] = React.useState(true);
-  // using useStates for the word count and useDraftSave to help with Redux store save
-  const [storyText, setStoryText] = React.useState('');
-  const [storyTitleState, setStoryTitle] = React.useState('');
+  const [validationErrors, setValidationErrors] = React.useState<string[]>([]);
+  const [storyText, setStoryText] = React.useState(storySubmission || '');
+  const [storyTitleState, setStoryTitleState] = React.useState(
+    storyTitle || ''
+  );
+
   const { error, isLoading, isSaved } = useDraftSave(
     storyText,
     storyTitleState
   );
   const userWordCount = useWordCount(storyText);
-  const { minWordCount, maxWordCount } = useAppSelector(
-    (state) => state.adminSubmission
-  );
 
   React.useEffect(() => {
-    if (storySubmission && !storyText) {
-      setStoryText(storySubmission);
+    // Update Redux store when local state changes
+    if (storyText !== storySubmission) {
+      dispatch(setStorySubmission(storyText));
     }
-
-    if (!storyTitle && !storyTitleState) {
-      setStoryTitle(storyTitle);
+    if (storyTitleState !== storyTitle) {
+      dispatch(setStoryTitle(storyTitleState));
     }
-  }, [storySubmission, storyText, storyTitle, storyTitleState]);
+  }, [storyText, storyTitleState, dispatch, storySubmission, storyTitle]);
 
   React.useEffect(() => {
-    if (
-      storySubmissionWordCount >= 10 &&
-      storySubmissionWordCount <= maxWordCount &&
-      storySubmissionWordCount >= minWordCount &&
-      storyTitle !== ''
-    ) {
-      setIsNextDisabled(false);
-    } else {
-      setIsNextDisabled(true);
+    // Validate form and collect all validation errors
+    const errors: string[] = [];
+    const trimmedTitle = storyTitleState.trim();
+    const trimmedText = storyText.trim();
+    const wordCount = trimmedText.split(/\s+/).length;
+
+    // Title validation
+    if (trimmedTitle.length === 0) {
+      errors.push('Title is required');
+    } else if (trimmedTitle.length < MIN_TITLE_LENGTH) {
+      errors.push(`Title must be at least ${MIN_TITLE_LENGTH} characters`);
+    } else if (trimmedTitle.length > MAX_TITLE_LENGTH) {
+      errors.push(`Title must be no more than ${MAX_TITLE_LENGTH} characters`);
     }
-  }, [
-    storyText,
-    storySubmissionWordCount,
-    storyTitle,
-    minWordCount,
-    maxWordCount,
-  ]);
+
+    // Story validation
+    if (trimmedText.length === 0) {
+      errors.push('Story text is required');
+    } else if (wordCount < minWordCount) {
+      errors.push(`Story must be at least ${minWordCount} words`);
+    } else if (wordCount > maxWordCount) {
+      errors.push(`Story must be no more than ${maxWordCount} words`);
+    }
+
+    setValidationErrors(errors);
+    setIsNextDisabled(errors.length > 0);
+  }, [storyText, storyTitleState, minWordCount, maxWordCount]);
 
   const handleChange = (
     e:
@@ -62,7 +85,9 @@ export const StorySubmission: React.FC = () => {
     if (e.target instanceof HTMLTextAreaElement) {
       setStoryText(e.target.value);
     } else {
-      setStoryTitle(e.target.value);
+      // Remove any special characters from title
+      const sanitizedTitle = e.target.value.replace(/[^\w\s-]/g, '');
+      setStoryTitleState(sanitizedTitle);
     }
   };
 
@@ -91,18 +116,24 @@ export const StorySubmission: React.FC = () => {
           placeholder='Enter your story title here'
           type='text'
           flex='start'
+          error={validationErrors.find((err) => err.includes('Title'))}
         />
       </div>
       <div className='row'>
         <h4 className='pb-2 mt-3 ms-1'>Story</h4>
         <textarea
           autoFocus
-          className='form-control ms-3'
+          className={`form-control ms-3 ${validationErrors.some((err) => err.includes('Story')) ? 'is-invalid' : ''}`}
           rows={10}
           placeholder='Enter your story here'
           value={storyText}
           onChange={handleChange}
         ></textarea>
+        {validationErrors.some((err) => err.includes('Story')) && (
+          <div className='invalid-feedback d-block ms-3'>
+            {validationErrors.find((err) => err.includes('Story'))}
+          </div>
+        )}
         <div className='d-flex flex-row justify-content-between align-items-center w-100'>
           <div className='d-flex flex-row justify-content-space-between'>
             <WordCount wordCount={userWordCount} />

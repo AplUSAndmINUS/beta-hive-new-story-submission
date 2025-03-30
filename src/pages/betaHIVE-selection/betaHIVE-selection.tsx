@@ -13,7 +13,7 @@ export const BetaHIVESelection: React.FC = () => {
   const [isNextDisabled, setIsNextDisabled] = React.useState<boolean>(true);
   const dispatch = useAppDispatch();
   const images = useHIVEImages();
-  const { adminData, minPromptSelections } = useAppSelector(
+  const { minPromptSelections } = useAppSelector(
     (state) => state.adminSubmission
   );
   const { betaHIVESelection } = useAppSelector(
@@ -43,8 +43,12 @@ export const BetaHIVESelection: React.FC = () => {
   }, [dispatch]);
 
   const handleHIVESelection = (genre: string) => {
-    dispatch(setBetaHIVESelection(genre));
-    setIsNextDisabled(false);
+    // Validate that the selected genre exists in the available images
+    const isValidHIVE = images.some((image) => image.name === genre);
+    if (isValidHIVE) {
+      dispatch(setBetaHIVESelection(genre));
+      setIsNextDisabled(false);
+    }
   };
 
   const getPlural = () =>
@@ -70,9 +74,9 @@ export const BetaHIVESelection: React.FC = () => {
         <h1 className='bd-title pb-2 mt-4'>Choose your HIVE</h1>
       </div>
       <div className='row'>
-        {images.map((image, index) => (
+        {images.map((image) => (
           <InputSelectionCard
-            key={index}
+            key={image.name}
             handleSelection={handleHIVESelection}
             isDisabled={false}
             name={image.name}
