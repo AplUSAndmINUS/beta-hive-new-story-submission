@@ -1,6 +1,6 @@
 import React from 'react';
-
 import { useAppSelector } from 'src/stores/store';
+import { getAssetPath } from 'src/config/app-config';
 
 interface Image {
   name: string;
@@ -13,18 +13,10 @@ export const useHIVEImages = () => {
   const [images, setImages] = React.useState<Image[]>([]);
 
   React.useEffect(() => {
-    const context = (require as any).context('src/assets', false, /\.png$/);
-
-    const imageMap: { [key: string]: string } = {};
-    context.keys().forEach((key: string) => {
-      const name = key.replace('./', '').replace('.png', '');
-      imageMap[name] = context(key).default || context(key);
-    });
-
     const imageArray: Image[] = betaHIVEs.map((hive) => ({
       name: hive.name,
       description: hive.description,
-      imgSource: imageMap[hive.imgSource.replace('.png', '')] || '',
+      imgSource: getAssetPath(`images/${hive.imgSource}`),
     }));
 
     setImages(imageArray);
