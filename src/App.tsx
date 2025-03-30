@@ -8,6 +8,8 @@ import Menu from './components/menu/menu';
 import ProgressBar from './components/progress-bar/progress-bar';
 
 import 'bootstrap/dist/js/bootstrap.bundle.min';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'src/styles/_app.scss';
 
 const App: React.FC = () => {

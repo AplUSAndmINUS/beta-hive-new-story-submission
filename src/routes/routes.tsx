@@ -14,14 +14,14 @@ export interface Routes extends NonIndexRouteObject {
 }
 
 export const storyRoutes: Routes[] = [
+  // { removed out since we're using the home page as the entry point
+  //   path: '/', // home page
+  //   name: 'Home',
+  //   element: <BetaHIVESelection />,
+  //   storySubmission: true,
+  // },
   {
-    path: '/', // home page
-    name: 'Home',
-    element: <BetaHIVESelection />,
-    storySubmission: true,
-  },
-  {
-    path: '/faqs', // story submission page's entry point
+    path: '/enter-the-arena', // story submission page's entry point
     name: 'Beta HIVE Selection',
     element: <BetaHIVESelection />,
     storySubmission: true,
