@@ -44,14 +44,20 @@ export const Menu: React.FC<MenuProps> = ({ routes }) => {
         <div className='offcanvas-body'>
           <ul className='nav flex-column m-0 p-0'>
             {routes
-              .filter((route: any) => route.path !== undefined && route.path !== '*' && route.path !== '/')
+              .filter(
+                (route: any) =>
+                  route.path !== undefined &&
+                  route.path !== '*' &&
+                  route.path !== '/' &&
+                  route.name !== 'Confirmation'
+              )
               .map((route: any, index: number) => (
                 <li
                   key={route.path + index.toString()}
                   className={`nav-item ${isMobile ? 'p-0' : 'p-2'}`}
                   style={{
                     minWidth: isMobile ? 'auto' : '175px',
-                    maxWidth: isMobile ? '125px' : '300px',
+                    maxWidth: isMobile ? 'auto' : '300px',
                   }}
                 >
                   <Link
