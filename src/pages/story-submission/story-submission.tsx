@@ -25,6 +25,8 @@ export const StorySubmission: React.FC = () => {
   const [validationErrors, setValidationErrors] = React.useState<string[]>([]);
   const [storyText, setStoryText] = React.useState(story || '');
   const [storyTitleState, setStoryTitleState] = React.useState(title || '');
+  const [hasStoryBeenTouched, setHasStoryBeenTouched] = React.useState(false);
+  const [hasTitleBeenTouched, setHasTitleBeenTouched] = React.useState(false);
 
   const { error, isLoading, isSaved } = useDraftSave(
     storyText,
@@ -64,18 +66,39 @@ export const StorySubmission: React.FC = () => {
       errors.push(`Title must be no more than ${MAX_TITLE_LENGTH} characters`);
     }
 
-    // Story validation
-    if (trimmedText.length === 0) {
-      errors.push('Story text is required');
-    } else if (wordCount < minWordCount) {
-      errors.push(`Story must be at least ${minWordCount} words`);
-    } else if (wordCount > maxWordCount) {
-      errors.push(`Story must be no more than ${maxWordCount} words`);
+    // Story validation - only show errors if the fields have been touched
+    if (hasStoryBeenTouched) {
+      if (trimmedText.length === 0) {
+        errors.push('Story text is required');
+      } else if (wordCount < minWordCount) {
+        errors.push(`Story must be at least ${minWordCount} words`);
+      } else if (wordCount > maxWordCount) {
+        errors.push(`Story must be no more than ${maxWordCount} words`);
+      }
+
+      if (hasTitleBeenTouched) {
+        if (trimmedTitle.length === 0) {
+          errors.push('Title is required');
+        } else if (trimmedTitle.length < MIN_TITLE_LENGTH) {
+          errors.push(`Title must be at least ${MIN_TITLE_LENGTH} characters`);
+        } else if (trimmedTitle.length > MAX_TITLE_LENGTH) {
+          errors.push(
+            `Title must be no more than ${MAX_TITLE_LENGTH} characters`
+          );
+        }
+      }
     }
 
     setValidationErrors(errors);
     setIsNextDisabled(errors.length > 0);
-  }, [storyText, storyTitleState, minWordCount, maxWordCount]);
+  }, [
+    storyText,
+    storyTitleState,
+    minWordCount,
+    maxWordCount,
+    hasStoryBeenTouched,
+    hasTitleBeenTouched,
+  ]);
 
   const handleChange = (
     e:
@@ -89,6 +112,14 @@ export const StorySubmission: React.FC = () => {
       const sanitizedTitle = e.target.value.replace(/[^\w\s-]/g, '');
       setStoryTitleState(sanitizedTitle);
     }
+  };
+
+  const handleStoryBlur = () => {
+    setHasStoryBeenTouched(true);
+  };
+
+  const handleTitleBlur = () => {
+    setHasTitleBeenTouched(true);
   };
 
   return (
@@ -117,23 +148,26 @@ export const StorySubmission: React.FC = () => {
           type='text'
           flex='start'
           error={validationErrors.find((err) => err.includes('Title'))}
+          autoFocus
+          onBlur={handleTitleBlur}
         />
       </div>
       <div className='row'>
         <h4 className='pb-2 mt-3 ms-1'>Story</h4>
         <textarea
-          autoFocus
-          className={`form-control ms-3 ${validationErrors.some((err) => err.includes('Story')) ? 'is-invalid' : ''}`}
+          className={`form-control ms-3 ${hasStoryBeenTouched && validationErrors.some((err) => err.includes('Story')) ? 'is-invalid' : ''}`}
           rows={10}
           placeholder='Enter your story here'
           value={storyText}
           onChange={handleChange}
+          onBlur={handleStoryBlur}
         ></textarea>
-        {validationErrors.some((err) => err.includes('Story')) && (
-          <div className='invalid-feedback d-block ms-3'>
-            {validationErrors.find((err) => err.includes('Story'))}
-          </div>
-        )}
+        {hasStoryBeenTouched &&
+          validationErrors.some((err) => err.includes('Story')) && (
+            <div className='invalid-feedback d-block ms-3'>
+              {validationErrors.find((err) => err.includes('Story'))}
+            </div>
+          )}
         <div className='d-flex flex-row justify-content-between align-items-center w-100'>
           <div className='d-flex flex-row justify-content-space-between'>
             <WordCount wordCount={userWordCount} />

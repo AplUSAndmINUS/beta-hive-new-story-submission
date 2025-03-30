@@ -23,39 +23,28 @@ export const InputSelectionCard: React.FC<InputSelectionCardProps> = ({
   imgSource,
   description,
 }) => {
-  const contentSensitivities: { name: string }[] = useAppSelector((state) =>
-    state.storySubmission.contentSensitivities.map((name: string) => ({ name }))
-);
-const betaHIVESelection = useAppSelector(
-  (state) => state.storySubmission.betaHIVESelection
-);
-const contentWarningSelected = useAppSelector(
-  (state) => state.storySubmission.contentWarning
-);
+  const contentWarnings: { name: string }[] = useAppSelector((state) =>
+    state.storySubmission.contentWarnings.map((name: string) => ({ name }))
+  );
+  const HIVE = useAppSelector((state) => state.storySubmission.HIVE);
+  const isContentSensitive = useAppSelector(
+    (state) => state.storySubmission.isContentSensitive
+  );
 
   const isChecked = React.useMemo(() => {
     if (isBetaHIVE) {
-      return betaHIVESelection === label;
+      return HIVE === label;
     }
     return inputType === 'radio'
-      ? contentWarningSelected === label
-      : contentSensitivities.some(
-          (item: { name: string }) => item.name === label
-        );
-  }, [
-    betaHIVESelection,
-    contentSensitivities,
-    contentWarningSelected,
-    inputType,
-    isBetaHIVE,
-    label,
-  ]);
+      ? isContentSensitive === (label === 'Yes')
+      : contentWarnings.some((item: { name: string }) => item.name === label);
+  }, [HIVE, contentWarnings, isContentSensitive, inputType, isBetaHIVE, label]);
 
   const handleCardClick = () => {
     if (inputType === 'radio') {
       handleSelection(label);
     } else if (inputType === 'checkbox') {
-      const isChecked = contentSensitivities.some(
+      const isChecked = contentWarnings.some(
         (item: { name: string }) => item.name === label
       );
       handleSelection(label, !isChecked);

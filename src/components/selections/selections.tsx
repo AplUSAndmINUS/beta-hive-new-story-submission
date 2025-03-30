@@ -14,27 +14,25 @@ export const Selections: React.FC<SelectionsProps> = ({
   const { minWordCount, maxWordCount } = useAppSelector(
     (state) => state.adminSubmission
   );
-  const {
-    betaHIVESelection,
-    promptSelections,
-    storySubmission,
-    storySubmissionWordCount,
-    storyTitle,
-    contentSensitivities,
-  } = useAppSelector((state) => state.storySubmission);
+  const { HIVE, prompts, story, title, contentWarnings } = useAppSelector(
+    (state) => state.storySubmission
+  );
+
+  const storyWordCount = story.trim().split(/\s+/).length;
 
   return isStoryView ? (
     <div className='container ml-auto text-start w-100'>
       <div className='row d-flex justify-content-start align-items-center'>
         <div className='pt-0 pb-0'>
           <p>
-            <strong>Prompts: </strong> {promptSelections || 'None selected'}{' '}
+            <strong>Prompts: </strong>{' '}
+            {prompts.join(', ') || 'None selected'}{' '}
           </p>
         </div>
         <div className='pb-0'>
           <p className='text-right'>
             <strong>Content Warnings: </strong>
-            {contentSensitivities || 'None selected'}{' '}
+            {contentWarnings.join(', ') || 'None selected'}{' '}
             {!isStoryView && <i className='fas fa-pencil-alt' />}
           </p>
         </div>
@@ -45,8 +43,9 @@ export const Selections: React.FC<SelectionsProps> = ({
       <div className='row d-flex justify-content-flex-start align-items-center w-50 p-0 mx-0 mb-3 text-start'>
         <Link
           to={
-            storyRoutes.filter((route) => route.name === 'Beta HIVE Selection')[0]
-              .path || '/'
+            storyRoutes.filter(
+              (route) => route.name === 'Beta HIVE Selection'
+            )[0].path || '/'
           }
           className='text-decoration-none custom-link'
           style={{ paddingLeft: 0 }}
@@ -54,8 +53,8 @@ export const Selections: React.FC<SelectionsProps> = ({
           <div className='pt-3 pb-0'>
             <p className='text-right'>
               <strong>Beta HIVE: </strong>
-              <span className={`${!betaHIVESelection && 'text-warning'}`}>
-                {betaHIVESelection || 'None selected'}{' '}
+              <span className={`${!HIVE && 'text-warning'}`}>
+                {HIVE || 'None selected'}{' '}
               </span>
               <i className='fas fa-pencil-alt' />
             </p>
@@ -73,10 +72,8 @@ export const Selections: React.FC<SelectionsProps> = ({
           <div className='pt-0 pb-0'>
             <p className='text-right'>
               <strong>Prompts: </strong>{' '}
-              <span
-                className={`${promptSelections.length < 1 && 'text-warning'}`}
-              >
-                {promptSelections.join(', ') || 'None selected'}{' '}
+              <span className={`${prompts.length < 1 && 'text-warning'}`}>
+                {prompts.join(', ') || 'None selected'}{' '}
               </span>
               <i className='fas fa-pencil-alt' />
             </p>
@@ -93,10 +90,10 @@ export const Selections: React.FC<SelectionsProps> = ({
           <div className='pt-0 pb-0'>
             <p className='text-right'>
               <strong>Story Submission: </strong>{' '}
-              <span className={`${!storySubmission && 'text-warning'}`}>
-                {storySubmission && storyTitle
-                  ? storySubmissionWordCount <= maxWordCount &&
-                    storySubmissionWordCount >= minWordCount
+              <span className={`${!story && 'text-warning'}`}>
+                {story && title
+                  ? storyWordCount <= maxWordCount &&
+                    storyWordCount >= minWordCount
                     ? 'Submitted'
                     : 'In progress'
                   : 'Not submitted'}{' '}
@@ -117,11 +114,9 @@ export const Selections: React.FC<SelectionsProps> = ({
             <p className='text-right'>
               <strong>Content Warnings: </strong>{' '}
               <span
-                className={`${
-                  contentSensitivities.length < 1 && 'text-warning'
-                }`}
+                className={`${contentWarnings.length < 1 && 'text-warning'}`}
               >
-                {contentSensitivities.join(', ') || 'None selected'}{' '}
+                {contentWarnings.join(', ') || 'None selected'}{' '}
               </span>
               <i className='fas fa-pencil-alt' />
             </p>

@@ -1,10 +1,7 @@
 import React from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/stores/store';
-import {
-  setStorySubmission,
-  setStoryTitle,
-} from 'src/stores/reducers/story-submission';
+import { setStory, setTitle } from 'src/stores/reducers/story-submission';
 import { addStory, updateStory } from 'src/services/apis/stories-apis';
 
 export const useDraftSave = (
@@ -19,9 +16,7 @@ export const useDraftSave = (
   const dispatch = useAppDispatch();
 
   // Get the current user's HIVE selection and prompts from Redux store
-  const { betaHIVESelection, promptSelections } = useAppSelector(
-    (state) => state.storySubmission
-  );
+  const { HIVE, prompts } = useAppSelector((state) => state.storySubmission);
   const { battleName } = useAppSelector((state) => state.adminSubmission);
 
   React.useEffect(() => {
@@ -36,8 +31,8 @@ export const useDraftSave = (
 
       try {
         // Update Redux store
-        dispatch(setStorySubmission(storyText));
-        dispatch(setStoryTitle(storyTitle));
+        dispatch(setStory(storyText));
+        dispatch(setTitle(storyTitle));
 
         if (saveAction) {
           dispatch(saveAction(storyText));
@@ -48,24 +43,28 @@ export const useDraftSave = (
           title: storyTitle,
           story: storyText,
           author: 'current_user_id', // This should come from your auth system
-          HIVE: betaHIVESelection || '', // Use selected HIVE if available
-          prompts: promptSelections || [], // Use selected prompts if available
+          HIVE: HIVE || '', // Use selected HIVE if available
+          prompts: prompts || [], // Use selected prompts if available
           isContentSensitive: false,
           contentWarnings: ['None'],
           battleName: battleName || 'Battle of the HIVEs',
           wordCount: storyText.trim().split(/\s+/).length,
-          status: 'draft',
+          characterCount: storyText.length,
+          status: 'Draft' as const,
+          feedback: [],
+          wins: 0,
+          losses: 0,
         };
 
         let response;
         if (draftId) {
           // Update existing draft
-          response = await updateStory({ ...storyData, id: draftId });
+          response = await updateStory({ ...storyData, id: String(draftId) });
         } else {
           // Create new draft
           response = await addStory(storyData);
           if (response?.id) {
-            setDraftId(response.id);
+            setDraftId(Number(response.id));
           }
         }
 
@@ -86,13 +85,14 @@ export const useDraftSave = (
 
     return () => clearTimeout(timer); // Clear timeout if user types again
   }, [
+    battleName,
+    dispatch,
+    draftId,
+    HIVE,
+    prompts,
+    saveAction,
     storyText,
     storyTitle,
-    dispatch,
-    saveAction,
-    draftId,
-    betaHIVESelection,
-    promptSelections,
   ]);
 
   return { isLoading, isSaved, error, draftId };

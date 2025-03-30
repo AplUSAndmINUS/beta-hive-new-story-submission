@@ -22,6 +22,7 @@ interface InputTypeProps {
   error?: string;
   isTouched?: boolean;
   onBlur?: () => void;
+  autoFocus?: boolean;
 }
 
 export const InputType: React.FC<InputTypeProps> = ({
@@ -46,6 +47,7 @@ export const InputType: React.FC<InputTypeProps> = ({
   error,
   isTouched,
   onBlur,
+  autoFocus,
 }) => {
   return (
     <div
@@ -82,6 +84,7 @@ export const InputType: React.FC<InputTypeProps> = ({
                     marginRight: '1rem',
                     height: '2rem',
                   }}
+                  autoFocus={autoFocus}
                 />
                 {error && isTouched && (
                   <div className='invalid-feedback d-block'>{error}</div>

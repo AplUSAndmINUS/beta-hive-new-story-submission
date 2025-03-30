@@ -52,8 +52,6 @@ export const BetaHIVESelection: React.FC = () => {
   const getPlural = () =>
     `${minPromptSelections} random prompt${minPromptSelections > 1 ? 's' : ''}`;
 
-  console.log('Admin data available: ', adminData);
-
   return (
     <div className='container-fluid'>
       <div className='row'>

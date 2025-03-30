@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { storySchema } from 'src/services/models/battleHIVE.types';
 
 // Define the state interface based on story schema
 interface StorySubmissionState {
