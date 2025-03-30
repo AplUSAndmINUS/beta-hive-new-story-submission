@@ -122,6 +122,7 @@ function get_all_stories($request) {
     $is_content_sensitive = $request->get_param('isContentSensitive');
     $wins = $request->get_param('wins');
     $losses = $request->get_param('losses');
+    $is_shared = $request->get_param('isShared');
 
     $args = array(
         'post_type' => 'story',
@@ -204,6 +205,7 @@ function get_all_stories($request) {
                 'losses' => $story_losses,
                 'date' => get_the_date('c'),
                 'modified' => get_the_modified_date('c'),
+                'isShared' => $is_shared,
                 'tags' => $tags
             );
             array_push($stories, $story);
@@ -245,8 +247,9 @@ function add_story($request) {
 
     // Validate required fields
     if (empty($params['title']) || empty($params['story']) || empty($params['author']) || 
-        empty($params['battleName']) || empty($params['HIVE']) || empty($params['wordCount']) || 
-        empty($params['characterCount'])) {
+        empty($params['system']['battleName']) || empty($params['system']['HIVE']) || 
+        empty($params['system']['wordCount']) || empty($params['system']['characterCount']) || 
+        empty($params['isShared'])) {
         return new WP_Error('missing_fields', __('Missing required fields'), array('status' => 400));
     }
 
@@ -271,39 +274,55 @@ function add_story($request) {
     $tags = array();
     
     // Add battle name as tag
-    $battle_name_tag = sanitize_text_field($params['battleName']);
+    $battle_name_tag = sanitize_text_field($params['system']['battleName']);
     wp_set_post_terms($post_id, $battle_name_tag, 'post_tag', true);
     
     // Add HIVE as tag
-    $hive_tag = sanitize_text_field($params['HIVE']);
+    $hive_tag = sanitize_text_field($params['system']['HIVE']);
     wp_set_post_terms($post_id, $hive_tag, 'post_tag', true);
 
     // Add content warnings as tags if they exist
-    if (!empty($params['contentWarnings']) && is_array($params['contentWarnings'])) {
-        $content_warnings = array_map('sanitize_text_field', $params['contentWarnings']);
+    if (!empty($params['system']['contentWarnings']) && is_array($params['system']['contentWarnings'])) {
+        $content_warnings = array_map('sanitize_text_field', $params['system']['contentWarnings']);
         wp_set_post_terms($post_id, $content_warnings, 'post_tag', true);
     }
 
-    // Add custom fields with sanitization
+    // Update custom fields with sanitization
     $meta_fields = array(
-        'HIVE' => 'sanitize_text_field',
-        'prompts' => 'sanitize_text_field',
+        'system' => array(
+            'HIVE' => 'sanitize_text_field',
+            'prompts' => 'sanitize_text_field',
+            'contentWarnings' => 'sanitize_text_field',
+            'battleName' => 'sanitize_text_field',
+            'wordCount' => 'absint',
+            'characterCount' => 'absint',
+            'status' => 'sanitize_text_field',
+            'feedback' => 'sanitize_text_field',
+            'wins' => 'absint',
+            'losses' => 'absint',
+            'lastModified' => 'sanitize_text_field',
+            'modifiedBy' => 'sanitize_text_field',
+            'version' => 'absint',
+            'tags' => 'sanitize_text_field',
+            'metadata' => array(
+                'isUserEditable' => 'rest_sanitize_boolean',
+                'lastAdminUpdate' => 'sanitize_text_field',
+                'adminId' => 'sanitize_text_field'
+            )
+        ),
         'isContentSensitive' => 'rest_sanitize_boolean',
-        'contentWarnings' => 'sanitize_text_field',
-        'battleName' => 'sanitize_text_field',
-        'wordCount' => 'absint',
-        'characterCount' => 'absint',
-        'status' => 'sanitize_text_field',
-        'feedback' => 'sanitize_text_field',
-        'wins' => 'absint',
-        'losses' => 'absint'
+        'isShared' => 'rest_sanitize_boolean'
     );
 
     foreach ($meta_fields as $field => $sanitize_callback) {
         if (isset($params[$field])) {
             $value = $params[$field];
             if (is_array($value)) {
-                $value = array_map($sanitize_callback, $value);
+                if (isset($value['metadata'])) {
+                    $value['metadata'] = array_map($sanitize_callback['metadata'], $value['metadata']);
+                } else {
+                    $value = array_map($sanitize_callback, $value);
+                }
             } else {
                 $value = $sanitize_callback($value);
             }
@@ -317,18 +336,29 @@ function add_story($request) {
         'title' => $post_data['post_title'],
         'story' => $post_data['post_content'],
         'author' => $post_data['post_author'],
-        'HIVE' => $params['HIVE'],
-        'prompts' => $params['prompts'] ?? array(),
         'isContentSensitive' => $params['isContentSensitive'] ?? false,
-        'contentWarnings' => $params['contentWarnings'] ?? array(),
-        'battleName' => $params['battleName'],
-        'wordCount' => $params['wordCount'],
-        'characterCount' => $params['characterCount'],
-        'status' => $params['status'] ?? 'draft',
-        'feedback' => null,
-        'wins' => 0,
-        'losses' => 0,
-        'date' => $post_data['post_date']
+        'isShared' => $params['isShared'] ?? false,
+        'system' => array(
+            'HIVE' => $params['system']['HIVE'],
+            'prompts' => $params['system']['prompts'] ?? array(),
+            'contentWarnings' => $params['system']['contentWarnings'] ?? array(),
+            'battleName' => $params['system']['battleName'],
+            'wordCount' => $params['system']['wordCount'],
+            'characterCount' => $params['system']['characterCount'],
+            'status' => $params['system']['status'] ?? 'draft',
+            'feedback' => array(),
+            'wins' => 0,
+            'losses' => 0,
+            'lastModified' => current_time('mysql'),
+            'modifiedBy' => 'system',
+            'version' => 1,
+            'tags' => array(),
+            'metadata' => array(
+                'isUserEditable' => false,
+                'lastAdminUpdate' => null,
+                'adminId' => null
+            )
+        )
     );
 
     return new WP_REST_Response($story, 201);
@@ -350,11 +380,67 @@ function update_story($request) {
         return new WP_Error('not_found', __('Story not found'), array('status' => 404));
     }
 
+    // Check if user has permission to edit this post
+    if (!current_user_can('edit_post', $id)) {
+        return new WP_Error('rest_forbidden', __('You do not have permission to edit this story'), array('status' => 403));
+    }
+
     // Validate required fields
     if (empty($params['title']) || empty($params['story']) || empty($params['author']) || 
-        empty($params['battleName']) || empty($params['HIVE']) || empty($params['wordCount']) || 
-        empty($params['characterCount'])) {
+        empty($params['system']['battleName']) || empty($params['system']['HIVE']) || 
+        empty($params['system']['wordCount']) || empty($params['system']['characterCount'])) {
         return new WP_Error('missing_fields', __('Missing required fields'), array('status' => 400));
+    }
+
+    // Get existing story data
+    $existing_story = array(
+        'system' => array(
+            'HIVE' => get_post_meta($id, 'system', true)['HIVE'] ?? '',
+            'prompts' => get_post_meta($id, 'system', true)['prompts'] ?? array(),
+            'contentWarnings' => get_post_meta($id, 'system', true)['contentWarnings'] ?? array(),
+            'battleName' => get_post_meta($id, 'system', true)['battleName'] ?? '',
+            'wordCount' => get_post_meta($id, 'system', true)['wordCount'] ?? 0,
+            'characterCount' => get_post_meta($id, 'system', true)['characterCount'] ?? 0,
+            'status' => get_post_meta($id, 'system', true)['status'] ?? 'draft',
+            'feedback' => get_post_meta($id, 'system', true)['feedback'] ?? array(),
+            'wins' => get_post_meta($id, 'system', true)['wins'] ?? 0,
+            'losses' => get_post_meta($id, 'system', true)['losses'] ?? 0,
+            'lastModified' => get_post_meta($id, 'system', true)['lastModified'] ?? '',
+            'modifiedBy' => get_post_meta($id, 'system', true)['modifiedBy'] ?? 'system',
+            'version' => get_post_meta($id, 'system', true)['version'] ?? 1,
+            'tags' => get_post_meta($id, 'system', true)['tags'] ?? array(),
+            'metadata' => get_post_meta($id, 'system', true)['metadata'] ?? array(
+                'isUserEditable' => false,
+                'lastAdminUpdate' => null,
+                'adminId' => null
+            )
+        )
+    );
+
+    // Prevent modification of protected system fields
+    $protected_fields = array(
+        'HIVE',
+        'prompts',
+        'battleName',
+        'status',
+        'feedback',
+        'wins',
+        'losses',
+        'version',
+        'tags',
+        'metadata'
+    );
+
+    foreach ($protected_fields as $field) {
+        if (isset($params['system'][$field]) && 
+            $params['system'][$field] !== $existing_story['system'][$field] && 
+            !current_user_can('manage_options')) {
+            return new WP_Error(
+                'rest_forbidden', 
+                __('You do not have permission to modify protected system fields'), 
+                array('status' => 403)
+            );
+        }
     }
 
     // Sanitize input
@@ -377,41 +463,57 @@ function update_story($request) {
     $tags = array();
     
     // Update battle name tag
-    $battle_name_tag = sanitize_text_field($params['battleName']);
+    $battle_name_tag = sanitize_text_field($params['system']['battleName']);
     wp_set_post_terms($id, $battle_name_tag, 'post_tag', true);
     
     // Update HIVE tag
-    $hive_tag = sanitize_text_field($params['HIVE']);
+    $hive_tag = sanitize_text_field($params['system']['HIVE']);
     wp_set_post_terms($id, $hive_tag, 'post_tag', true);
 
     // Update content warnings tags if they exist
-    if (isset($params['contentWarnings'])) {
-        $content_warnings = is_array($params['contentWarnings']) 
-            ? array_map('sanitize_text_field', $params['contentWarnings'])
+    if (isset($params['system']['contentWarnings'])) {
+        $content_warnings = is_array($params['system']['contentWarnings']) 
+            ? array_map('sanitize_text_field', $params['system']['contentWarnings'])
             : array();
         wp_set_post_terms($id, $content_warnings, 'post_tag', true);
     }
 
     // Update custom fields with sanitization
     $meta_fields = array(
-        'HIVE' => 'sanitize_text_field',
-        'prompts' => 'sanitize_text_field',
+        'system' => array(
+            'HIVE' => 'sanitize_text_field',
+            'prompts' => 'sanitize_text_field',
+            'contentWarnings' => 'sanitize_text_field',
+            'battleName' => 'sanitize_text_field',
+            'wordCount' => 'absint',
+            'characterCount' => 'absint',
+            'status' => 'sanitize_text_field',
+            'feedback' => 'sanitize_text_field',
+            'wins' => 'absint',
+            'losses' => 'absint',
+            'lastModified' => 'sanitize_text_field',
+            'modifiedBy' => 'sanitize_text_field',
+            'version' => 'absint',
+            'tags' => 'sanitize_text_field',
+            'metadata' => array(
+                'isUserEditable' => 'rest_sanitize_boolean',
+                'lastAdminUpdate' => 'sanitize_text_field',
+                'adminId' => 'sanitize_text_field'
+            )
+        ),
         'isContentSensitive' => 'rest_sanitize_boolean',
-        'contentWarnings' => 'sanitize_text_field',
-        'battleName' => 'sanitize_text_field',
-        'wordCount' => 'absint',
-        'characterCount' => 'absint',
-        'status' => 'sanitize_text_field',
-        'feedback' => 'sanitize_text_field',
-        'wins' => 'absint',
-        'losses' => 'absint'
+        'isShared' => 'rest_sanitize_boolean'
     );
 
     foreach ($meta_fields as $field => $sanitize_callback) {
         if (isset($params[$field])) {
             $value = $params[$field];
             if (is_array($value)) {
-                $value = array_map($sanitize_callback, $value);
+                if (isset($value['metadata'])) {
+                    $value['metadata'] = array_map($sanitize_callback['metadata'], $value['metadata']);
+                } else {
+                    $value = array_map($sanitize_callback, $value);
+                }
             } else {
                 $value = $sanitize_callback($value);
             }
@@ -425,18 +527,29 @@ function update_story($request) {
         'title' => $post_data['post_title'],
         'story' => $post_data['post_content'],
         'author' => $post_data['post_author'],
-        'HIVE' => $params['HIVE'],
-        'prompts' => $params['prompts'] ?? array(),
         'isContentSensitive' => $params['isContentSensitive'] ?? false,
-        'contentWarnings' => $params['contentWarnings'] ?? array(),
-        'battleName' => $params['battleName'],
-        'wordCount' => $params['wordCount'],
-        'characterCount' => $params['characterCount'],
-        'status' => $params['status'] ?? 'draft',
-        'feedback' => $params['feedback'] ?? null,
-        'wins' => $params['wins'] ?? 0,
-        'losses' => $params['losses'] ?? 0,
-        'modified' => $post_data['post_modified']
+        'isShared' => $params['isShared'] ?? false,
+        'system' => array(
+            'HIVE' => $params['system']['HIVE'],
+            'prompts' => $params['system']['prompts'] ?? array(),
+            'contentWarnings' => $params['system']['contentWarnings'] ?? array(),
+            'battleName' => $params['system']['battleName'],
+            'wordCount' => $params['system']['wordCount'],
+            'characterCount' => $params['system']['characterCount'],
+            'status' => $params['system']['status'] ?? 'draft',
+            'feedback' => $params['system']['feedback'] ?? array(),
+            'wins' => $params['system']['wins'] ?? 0,
+            'losses' => $params['system']['losses'] ?? 0,
+            'lastModified' => $post_data['post_modified'],
+            'modifiedBy' => $params['system']['modifiedBy'] ?? 'system',
+            'version' => $params['system']['version'] ?? 1,
+            'tags' => $params['system']['tags'] ?? array(),
+            'metadata' => $params['system']['metadata'] ?? array(
+                'isUserEditable' => false,
+                'lastAdminUpdate' => null,
+                'adminId' => null
+            )
+        )
     );
 
     return new WP_REST_Response($story, 200);

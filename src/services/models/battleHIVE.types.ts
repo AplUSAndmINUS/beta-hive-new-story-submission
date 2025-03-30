@@ -7,8 +7,8 @@ export interface authorSchema {
   name: string;
   email: string;
   HIVE: betaHIVESchema['name'];
-  wins: storySchema['wins'];
-  losses: storySchema['losses'];
+  wins: storySchema['system']['wins'];
+  losses: storySchema['system']['losses'];
   stories: storySchema['title'][];
 }
 
@@ -25,21 +25,36 @@ export interface feedbackSchema {
 
 export interface storySchema {
   id: string;
+  // User-editable fields
   title: string;
   author: string;
   story: string;
-  HIVE: betaHIVESchema['name'];
-  prompts: promptsSchema['name'][];
-  isContentSensitive: boolean;
-  contentWarnings: contentWarningsSchema['name'][] | ['None'];
-  battleName: string;
-  wordCount: number;
-  characterCount: number;
-  status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
-  feedback: Pick<
-    feedbackSchema,
-    'id' | 'feedback' | 'isPublic' | 'isPositive' | 'isAnonymous'
-  >[];
-  wins: number;
-  losses: number;
+  isContentSensitive?: boolean;
+  isShared: boolean;
+
+  // System-controlled fields (protected from user modification)
+  system: {
+    HIVE: betaHIVESchema['name'];
+    prompts: promptsSchema['name'][];
+    contentWarnings: contentWarningsSchema['name'][] | ['None'];
+    battleName: string;
+    wordCount: number;
+    characterCount: number;
+    status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
+    feedback: Pick<
+      feedbackSchema,
+      'id' | 'feedback' | 'isPublic' | 'isPositive' | 'isAnonymous'
+    >[];
+    wins: number;
+    losses: number;
+    lastModified: string;
+    modifiedBy: 'system' | 'admin';
+    version: number;
+    tags: string[];
+    metadata: {
+      isUserEditable: boolean;
+      lastAdminUpdate: string | null;
+      adminId: string | null;
+    };
+  };
 }

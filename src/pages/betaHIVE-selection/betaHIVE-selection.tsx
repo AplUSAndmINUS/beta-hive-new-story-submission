@@ -16,7 +16,7 @@ export const BetaHIVESelection: React.FC = () => {
   const { minPromptSelections } = useAppSelector(
     (state) => state.adminSubmission
   );
-  const { HIVE } = useAppSelector((state) => state.storySubmission);
+  const { system: { HIVE } } = useAppSelector((state) => state.storySubmission);
 
   React.useEffect(() => {
     if (HIVE && HIVE !== '') setIsNextDisabled(false);

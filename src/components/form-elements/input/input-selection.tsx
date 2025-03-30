@@ -24,9 +24,11 @@ export const InputSelectionCard: React.FC<InputSelectionCardProps> = ({
   description,
 }) => {
   const contentWarnings: { name: string }[] = useAppSelector((state) =>
-    state.storySubmission.contentWarnings.map((name: string) => ({ name }))
+    state.storySubmission.system.contentWarnings.map((name: string) => ({
+      name,
+    }))
   );
-  const HIVE = useAppSelector((state) => state.storySubmission.HIVE);
+  const HIVE = useAppSelector((state) => state.storySubmission.system.HIVE);
   const isContentSensitive = useAppSelector(
     (state) => state.storySubmission.isContentSensitive
   );

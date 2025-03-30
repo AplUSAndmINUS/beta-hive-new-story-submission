@@ -6,7 +6,11 @@ import NavigateButtons from 'src/components/navigate-buttons/navigate-buttons';
 import WordCount from 'src/components/word-count/word-count';
 import InputType from 'src/components/form-elements/input/input-type';
 import { useAppDispatch, useAppSelector } from 'src/stores/store';
-import { setStory, setTitle } from 'src/stores/reducers/story-submission';
+import {
+  setStory,
+  setTitle,
+  setIsShared,
+} from 'src/stores/reducers/story-submission';
 import useDraftSave from 'src/utils/hooks/useDraftSave';
 import useWordCount from 'src/utils/hooks/useWordCount';
 import { fetchAdminData } from 'src/stores/middleware/admin-thunks';
@@ -16,7 +20,9 @@ const MAX_TITLE_LENGTH = 100;
 
 export const StorySubmission: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { story, title } = useAppSelector((state) => state.storySubmission);
+  const { story, title, isShared } = useAppSelector(
+    (state) => state.storySubmission
+  );
   const { minWordCount, maxWordCount } = useAppSelector(
     (state) => state.adminSubmission
   );
@@ -137,20 +143,44 @@ export const StorySubmission: React.FC = () => {
         <Selections />
       </div>
       <div className='row'>
-        <InputType
-          name='storyTitle'
-          value={storyTitleState}
-          isDisabled={false}
-          label={'Story title'}
-          isRequired
-          onChange={handleChange}
-          placeholder='Enter your story title here'
-          type='text'
-          flex='start'
-          error={validationErrors.find((err) => err.includes('Title'))}
-          autoFocus
-          onBlur={handleTitleBlur}
-        />
+        <div className='d-flex flex-row justify-content-between align-items-center w-100'>
+          <InputType
+            name='storyTitle'
+            value={storyTitleState}
+            isDisabled={false}
+            label={'Story title'}
+            isRequired
+            onChange={handleChange}
+            placeholder='Enter your story title here'
+            type='text'
+            flex='start'
+            error={validationErrors.find((err) => err.includes('Title'))}
+            autoFocus
+            onBlur={handleTitleBlur}
+          />
+          <div className='row mt-4'>
+            <div className='col-12'>
+              <div className='form-check form-switch'>
+                <label
+                  className='form-check-label'
+                  htmlFor='storySharingSwitch'
+                >
+                  {isShared
+                    ? 'Please share my story with my HIVE to get help and feedback.'
+                    : 'Please do not share my story with my HIVE.'}
+                </label>
+                <input
+                  className='form-check-input'
+                  type='checkbox'
+                  role='switch'
+                  id='storySharingSwitch'
+                  checked={isShared}
+                  onChange={(e) => dispatch(setIsShared(e.target.checked))}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div className='row'>
         <h4 className='pb-2 mt-3 ms-1'>Story</h4>

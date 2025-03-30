@@ -14,9 +14,12 @@ export const Selections: React.FC<SelectionsProps> = ({
   const { minWordCount, maxWordCount } = useAppSelector(
     (state) => state.adminSubmission
   );
-  const { HIVE, prompts, story, title, contentWarnings } = useAppSelector(
-    (state) => state.storySubmission
-  );
+  const {
+    story,
+    title,
+    isShared,
+    system: { HIVE, prompts, contentWarnings },
+  } = useAppSelector((state) => state.storySubmission);
 
   const storyWordCount = story.trim().split(/\s+/).length;
 
@@ -97,6 +100,24 @@ export const Selections: React.FC<SelectionsProps> = ({
                     ? 'Submitted'
                     : 'In progress'
                   : 'Not submitted'}{' '}
+              </span>
+              <i className='fas fa-pencil-alt' />
+            </p>
+          </div>
+        </Link>
+        <Link
+          to={
+            storyRoutes.filter((route) => route.name === 'Story Submission')[0]
+              .path || '/'
+          }
+          className='text-decoration-none custom-link'
+          style={{ paddingLeft: 0 }}
+        >
+          <div className='pt-0 pb-0'>
+            <p className='text-right'>
+              <strong>Story Shared with HIVE? </strong>{' '}
+              <span className={`${!isShared && 'text-warning'}`}>
+                {isShared ? 'Yes (Public) ' : 'No (Private) '}
               </span>
               <i className='fas fa-pencil-alt' />
             </p>

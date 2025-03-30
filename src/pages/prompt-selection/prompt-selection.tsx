@@ -9,7 +9,7 @@ import { fetchAdminData } from 'src/stores/middleware/admin-thunks';
 
 export const PromptSelection: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { prompts: selectedPrompts } = useAppSelector(
+  const { system: { prompts: selectedPrompts } } = useAppSelector(
     (state) => state.storySubmission
   );
   const { minPromptSelections, prompts } = useAppSelector(

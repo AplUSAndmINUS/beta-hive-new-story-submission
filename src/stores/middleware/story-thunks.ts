@@ -12,12 +12,12 @@ export const addStoryThunk = createAsyncThunk(
   async (story: Omit<storySchema, 'id' | 'feedback' | 'wins' | 'losses'>) => {
     console.log('Starting addStoryThunk with data:', {
       title: story.title,
-      HIVE: story.HIVE,
-      wordCount: story.wordCount,
-      characterCount: story.characterCount,
-      status: story.status,
-      prompts: story.prompts,
-      contentWarnings: story.contentWarnings,
+      HIVE: story.system.HIVE,
+      wordCount: story.system.wordCount,
+      characterCount: story.system.characterCount,
+      status: story.system.status,
+      prompts: story.system.prompts,
+      contentWarnings: story.system.contentWarnings,
       isContentSensitive: story.isContentSensitive,
     });
 
@@ -26,13 +26,13 @@ export const addStoryThunk = createAsyncThunk(
       console.log('addStoryThunk completed successfully:', {
         id: response.id,
         title: response.title,
-        HIVE: response.HIVE,
-        status: response.status,
-        wordCount: response.wordCount,
-        characterCount: response.characterCount,
-        feedback: response.feedback,
-        wins: response.wins,
-        losses: response.losses,
+        HIVE: response.system.HIVE,
+        status: response.system.status,
+        wordCount: response.system.wordCount,
+        characterCount: response.system.characterCount,
+        feedback: response.system.feedback,
+        wins: response.system.wins,
+        losses: response.system.losses,
       });
       return response;
     } catch (error) {
@@ -49,12 +49,12 @@ export const updateStoryThunk = createAsyncThunk(
     console.log('Starting updateStoryThunk with data:', {
       id: story.id,
       title: story.title,
-      HIVE: story.HIVE,
-      wordCount: story.wordCount,
-      characterCount: story.characterCount,
-      status: story.status,
-      prompts: story.prompts,
-      contentWarnings: story.contentWarnings,
+      HIVE: story.system.HIVE,
+      wordCount: story.system.wordCount,
+      characterCount: story.system.characterCount,
+      status: story.system.status,
+      prompts: story.system.prompts,
+      contentWarnings: story.system.contentWarnings,
       isContentSensitive: story.isContentSensitive,
     });
 
@@ -63,13 +63,13 @@ export const updateStoryThunk = createAsyncThunk(
       console.log('updateStoryThunk completed successfully:', {
         id: response.id,
         title: response.title,
-        HIVE: response.HIVE,
-        status: response.status,
-        wordCount: response.wordCount,
-        characterCount: response.characterCount,
-        feedback: response.feedback,
-        wins: response.wins,
-        losses: response.losses,
+        HIVE: response.system.HIVE,
+        status: response.system.status,
+        wordCount: response.system.wordCount,
+        characterCount: response.system.characterCount,
+        feedback: response.system.feedback,
+        wins: response.system.wins,
+        losses: response.system.losses,
       });
       return response;
     } catch (error) {
@@ -90,13 +90,13 @@ export const getStoryThunk = createAsyncThunk(
       console.log('getStoryThunk completed successfully:', {
         id: response.id,
         title: response.title,
-        HIVE: response.HIVE,
-        status: response.status,
-        wordCount: response.wordCount,
-        characterCount: response.characterCount,
-        feedback: response.feedback,
-        wins: response.wins,
-        losses: response.losses,
+        HIVE: response.system.HIVE,
+        status: response.system.status,
+        wordCount: response.system.wordCount,
+        characterCount: response.system.characterCount,
+        feedback: response.system.feedback,
+        wins: response.system.wins,
+        losses: response.system.losses,
       });
       return response;
     } catch (error) {

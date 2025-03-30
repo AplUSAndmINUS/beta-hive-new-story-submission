@@ -1,5 +1,4 @@
 import React from 'react';
-import moment from 'moment';
 
 import Modal from 'src/components/modal/modal';
 import NavigationButtons from 'src/components/navigate-buttons/navigate-buttons';
@@ -24,8 +23,12 @@ export const ContentWarnings: React.FC = () => {
   const [showModal, setShowModal] = React.useState(false);
   const [isErrorModal, setIsErrorModal] = React.useState(false);
 
-  const { contentWarnings, isContentSensitive, HIVE, prompts, story, title } =
-    useAppSelector((state) => state.storySubmission);
+  const {
+    isContentSensitive,
+    system: { HIVE, prompts, contentWarnings },
+    story,
+    title,
+  } = useAppSelector((state) => state.storySubmission);
 
   const {
     minWordCount,
@@ -61,13 +64,16 @@ export const ContentWarnings: React.FC = () => {
     }
 
     // Content warning validation
-    if (isContentSensitive && contentWarnings.length === 0) {
-      errors.push('Please select at least one content warning');
-    } else if (
-      isContentSensitive &&
-      contentWarnings.length > MAX_CONTENT_WARNINGS
-    ) {
-      errors.push(`Maximum ${MAX_CONTENT_WARNINGS} content warnings allowed`);
+    if (isContentSensitive === undefined) {
+      errors.push(
+        'Please select whether your story contains sensitive content.'
+      );
+    } else if (isContentSensitive && contentWarnings.length === 0) {
+      errors.push('Please select at least one content warning.');
+    } else if (contentWarnings.length > MAX_CONTENT_WARNINGS) {
+      errors.push(
+        `You can only select up to ${MAX_CONTENT_WARNINGS} content warnings.`
+      );
     }
 
     setValidationErrors(errors);
@@ -87,17 +93,35 @@ export const ContentWarnings: React.FC = () => {
     e.preventDefault();
 
     const storyData = {
+      // User-editable fields
       title,
       story,
       author: 'Author ID', // This should come from user authentication
-      HIVE,
-      prompts,
       isContentSensitive,
-      contentWarnings,
-      battleName: 'Battle of the HIVEs', // This should come from admin settings
-      wordCount: story.trim().split(/\s+/).length,
-      characterCount: story.length,
-      status: 'Draft' as const,
+      isShared: false, // User's sharing preference
+
+      // System-controlled fields (protected from user modification)
+      system: {
+        HIVE,
+        prompts,
+        battleName: 'Battle of the HIVEs', // This should come from admin settings
+        contentWarnings: contentWarnings as string[],
+        wordCount: story.trim().split(/\s+/).length,
+        characterCount: story.length,
+        status: 'Draft' as const,
+        lastModified: new Date().toISOString(),
+        modifiedBy: 'system' as const,
+        version: 1,
+        tags: [], // Tags can only be modified by admin
+        metadata: {
+          isUserEditable: false,
+          lastAdminUpdate: null,
+          adminId: null,
+        },
+        feedback: [], // Initialize empty feedback array
+        wins: 0, // Initialize wins count
+        losses: 0, // Initialize losses count
+      },
     };
 
     try {
@@ -121,126 +145,129 @@ export const ContentWarnings: React.FC = () => {
     }
   };
 
-  const handleContentSensitivities = (
-    contentName: string,
-    isChecked?: boolean
-  ) => {
-    if (isContentSensitive) {
-      const currentWarnings = new Set(contentWarnings);
-
-      if (isChecked) {
-        if (currentWarnings.has(contentName)) {
-          currentWarnings.delete(contentName);
-        } else if (currentWarnings.size < MAX_CONTENT_WARNINGS) {
-          currentWarnings.add(contentName);
-        }
-      } else {
-        currentWarnings.delete(contentName);
-      }
-
-      dispatch(setContentWarnings(Array.from(currentWarnings)));
+  const handleContentSensitivities = (warning: string) => {
+    if (contentWarnings.includes(warning)) {
+      dispatch(
+        setContentWarnings(contentWarnings.filter((w) => w !== warning))
+      );
+    } else {
+      dispatch(setContentWarnings([...contentWarnings, warning]));
     }
   };
 
   const handleNextClick = () => {
-    if (validationErrors.length > 0) {
-      setIsErrorModal(true);
-      setShowModal(true);
-    } else {
-      setShowModal(true);
+    const errors: string[] = [];
+    if (isContentSensitive === undefined) {
+      errors.push(
+        'Please select whether your story contains sensitive content.'
+      );
+    } else if (isContentSensitive && contentWarnings.length === 0) {
+      errors.push('Please select at least one content warning.');
+    } else if (contentWarnings.length > MAX_CONTENT_WARNINGS) {
+      errors.push(
+        `You can only select up to ${MAX_CONTENT_WARNINGS} content warnings.`
+      );
     }
+    setValidationErrors(errors);
+    setIsSubmitDisabled(errors.length > 0);
+    setShowModal(true);
   };
 
   return (
-    <div className='container-fluid'>
-      <div className='row d-flex justify-content-between align-items-center'>
-        <div className='col'>
-          <h1 className='bd-title pb-2 mt-4'>Content warnings</h1>
-          <p className='text-muted pb-2 mt-2 fs-5'>
-            Specify if your story will include any sensitive content or
-            objectionable material.
-            <br />
-            These are used to allow readers to filter stories based on their
-            preferences.
-          </p>
+    <>
+      <div className='container-fluid'>
+        <div className='row d-flex justify-content-between align-items-center'>
+          <div className='col'>
+            <h1 className='bd-title pb-2 mt-4'>Content warnings</h1>
+            <p className='text-muted pb-2 mt-2 fs-5'>
+              Specify if your story will include any sensitive content or
+              objectionable material.
+              <br />
+              These are used to allow readers to filter stories based on their
+              preferences.
+            </p>
+          </div>
+          <Selections />
         </div>
-        <Selections />
-      </div>
-      <div className='row'>
-        <h3 className='pb-2 mt-5'>
-          Will your story have any content sensitive to certain groups?
-        </h3>
-        <InputSelectionCard
-          name='isContentSensitive'
-          isDisabled={false}
-          inputType='radio'
-          label='Yes'
-          handleSelection={handleContentWarningRadio}
+        <div className='row mt-5'>
+          <h3 className='pb-2 mt-5'>Content Sensitivity</h3>
+          <div className='d-flex flex-row justify-content-between align-items-center'>
+            <InputSelectionCard
+              name='contentSensitive'
+              inputType='radio'
+              label='Yes'
+              handleSelection={handleContentWarningRadio}
+              isDisabled={false}
+            />
+            <InputSelectionCard
+              name='contentSensitive'
+              inputType='radio'
+              label='No'
+              handleSelection={handleContentWarningRadio}
+              isDisabled={false}
+            />
+          </div>
+        </div>
+
+        <div className={`row mt-5 ${!isContentSensitive && 'opacity-25'}`}>
+          <h3 className='pb-2 mt-5'>
+            Content Sensitivities
+            {isContentSensitive && (
+              <small className='text-muted ms-2'>
+                (Select up to {MAX_CONTENT_WARNINGS})
+              </small>
+            )}
+          </h3>
+          {availableWarnings.map((warning, index) => (
+            <InputSelectionCard
+              key={warning.id || index}
+              name={warning.name}
+              inputType='checkbox'
+              isDisabled={
+                !isContentSensitive ||
+                (contentWarnings.length >= MAX_CONTENT_WARNINGS &&
+                  !contentWarnings.includes(warning.name))
+              }
+              label={warning.name}
+              handleSelection={handleContentSensitivities}
+            />
+          ))}
+        </div>
+        <NavigationButtons
+          backNavigation='Story Submission'
+          handleSubmit={handleNextClick}
+          isNextDisabled={true}
+          isNextDisplayed={false}
+          isSubmitDisabled={isSubmitDisabled}
+          isSubmitDisplayed={true}
         />
-        <InputSelectionCard
-          name='isContentSensitive'
-          isDisabled={false}
-          inputType='radio'
-          label='No'
-          handleSelection={handleContentWarningRadio}
-        />
-      </div>
-      <div className={`row mt-5 ${!isContentSensitive && 'opacity-25'}`}>
-        <h3 className='pb-2 mt-5'>
-          Content Sensitivities
-          {isContentSensitive && (
-            <small className='text-muted ms-2'>
-              (Select up to {MAX_CONTENT_WARNINGS})
-            </small>
-          )}
-        </h3>
-        {availableWarnings.map((warning, index) => (
-          <InputSelectionCard
-            key={warning.id || index}
-            name={warning.name}
-            inputType='checkbox'
-            isDisabled={
-              !isContentSensitive ||
-              (contentWarnings.length >= MAX_CONTENT_WARNINGS &&
-                !contentWarnings.includes(warning.name))
+        {showModal && (
+          <Modal
+            alertMessage={
+              isErrorModal
+                ? validationErrors[0]
+                : 'Are you sure you want to submit your story? Once you submit, you cannot change your HIVE selection.'
             }
-            label={warning.name}
-            handleSelection={handleContentSensitivities}
+            alertMessage2={
+              isErrorModal
+                ? undefined
+                : '(You can edit your story and content warnings after submission.)'
+            }
+            isConfirmation={!isErrorModal}
+            onConfirm={() => {
+              const formEvent = new Event(
+                'submit'
+              ) as unknown as React.FormEvent;
+              handleSubmit(formEvent);
+            }}
+            onDismiss={() => {
+              setShowModal(false);
+              setIsErrorModal(false);
+            }}
           />
-        ))}
+        )}
       </div>
-      <NavigationButtons
-        backNavigation='Story Submission'
-        handleSubmit={handleNextClick}
-        isNextDisabled={true}
-        isNextDisplayed={false}
-        isSubmitDisabled={isSubmitDisabled}
-        isSubmitDisplayed={true}
-      />
-      {showModal && (
-        <Modal
-          alertMessage={
-            isErrorModal
-              ? validationErrors[0]
-              : 'Are you sure you want to submit your story? Once you submit, you cannot change your HIVE selection.'
-          }
-          alertMessage2={
-            isErrorModal
-              ? undefined
-              : '(You can edit your story after submission.)'
-          }
-          isConfirmation={!isErrorModal}
-          onConfirm={() => {
-            const formEvent = new Event('submit') as unknown as React.FormEvent;
-            handleSubmit(formEvent);
-          }}
-          onDismiss={() => {
-            setShowModal(false);
-            setIsErrorModal(false);
-          }}
-        />
-      )}
-    </div>
+    </>
   );
 };
 

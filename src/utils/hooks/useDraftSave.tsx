@@ -16,7 +16,9 @@ export const useDraftSave = (
   const dispatch = useAppDispatch();
 
   // Get the current user's HIVE selection and prompts from Redux store
-  const { HIVE, prompts } = useAppSelector((state) => state.storySubmission);
+  const {
+    system: { HIVE, prompts },
+  } = useAppSelector((state) => state.storySubmission);
   const { battleName } = useAppSelector((state) => state.adminSubmission);
 
   React.useEffect(() => {
@@ -43,17 +45,29 @@ export const useDraftSave = (
           title: storyTitle,
           story: storyText,
           author: 'current_user_id', // This should come from your auth system
-          HIVE: HIVE || '', // Use selected HIVE if available
-          prompts: prompts || [], // Use selected prompts if available
-          isContentSensitive: false,
-          contentWarnings: ['None'],
-          battleName: battleName || 'Battle of the HIVEs',
-          wordCount: storyText.trim().split(/\s+/).length,
-          characterCount: storyText.length,
-          status: 'Draft' as const,
-          feedback: [],
-          wins: 0,
-          losses: 0,
+          isContentSensitive: undefined,
+          isShared: false,
+          system: {
+            HIVE: HIVE || '',
+            prompts: prompts || [],
+            contentWarnings: ['None'],
+            battleName: battleName || 'Battle of the HIVEs',
+            wordCount: storyText.trim().split(/\s+/).length,
+            characterCount: storyText.length,
+            status: 'Draft' as const,
+            feedback: [],
+            wins: 0,
+            losses: 0,
+            lastModified: new Date().toISOString(),
+            modifiedBy: 'system' as const,
+            version: 1,
+            tags: [],
+            metadata: {
+              isUserEditable: false,
+              lastAdminUpdate: null,
+              adminId: null,
+            },
+          },
         };
 
         let response;

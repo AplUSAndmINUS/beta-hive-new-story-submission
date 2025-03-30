@@ -3,8 +3,12 @@ import { useAppSelector } from 'src/stores/store';
 import Selections from 'src/components/selections/selections';
 
 const Confirmation: React.FC = () => {
-  const { title, story, HIVE, prompts, isContentSensitive, contentWarnings } =
-    useAppSelector((state) => state.storySubmission);
+  const {
+    title,
+    story,
+    isContentSensitive,
+    system: { HIVE, prompts, contentWarnings },
+  } = useAppSelector((state) => state.storySubmission);
 
   return (
     <div className='container-fluid'>
@@ -12,7 +16,7 @@ const Confirmation: React.FC = () => {
         <div className='col'>
           <h1 className='bd-title pb-2 mt-4'>Story Submission Confirmation</h1>
           <p className='text-muted pb-2 mt-2 fs-5'>
-            Please review your story details before final submission.
+            Thanks! Your story has been submitted.
           </p>
         </div>
         <Selections />

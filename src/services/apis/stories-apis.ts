@@ -13,71 +13,100 @@ declare global {
 }
 
 export interface StoryData {
+  // User-editable fields
   title: string;
   story: string;
   author: string;
-  HIVE: string;
-  prompts: string[];
   isContentSensitive: boolean;
-  contentWarnings: string[];
-  battleName: string;
-  wordCount: number;
-  status: string;
+  isShared: boolean;
+
+  // System-controlled fields (protected from user modification)
+  system: {
+    HIVE: string;
+    prompts: string[];
+    contentWarnings: string[];
+    battleName: string;
+    wordCount: number;
+    status: string;
+    lastModified: string;
+    modifiedBy: 'system' | 'admin';
+    version: number;
+    tags: string[];
+    metadata: {
+      isUserEditable: boolean;
+      lastAdminUpdate: string | null;
+      adminId: string | null;
+    };
+  };
 }
 
 // Function to add a story to the database
 export const addStory = async (
-  story: Omit<storySchema, 'id' | 'feedback' | 'wins' | 'losses'>
+  story: Omit<
+    storySchema,
+    'id' | 'system.feedback' | 'system.wins' | 'system.losses'
+  >
 ): Promise<storySchema> => {
   try {
     await waitForNonce();
     console.log('Attempting to add story:', {
       title: story.title,
-      HIVE: story.HIVE,
-      wordCount: story.wordCount,
-      characterCount: story.characterCount,
-      status: story.status,
-      prompts: story.prompts,
-      contentWarnings: story.contentWarnings,
+      HIVE: story.system.HIVE,
+      wordCount: story.system.wordCount,
+      characterCount: story.system.characterCount,
+      status: story.system.status,
+      prompts: story.system.prompts,
+      contentWarnings: story.system.contentWarnings,
       isContentSensitive: story.isContentSensitive,
+      lastModified: story.system.lastModified,
+      modifiedBy: story.system.modifiedBy,
+      version: story.system.version,
+      tags: story.system.tags,
+      metadata: story.system.metadata,
     });
 
     const response = await axiosInstance.post('/stories', {
       title: story.title,
       story: story.story,
       author: story.author,
-      HIVE: story.HIVE,
-      prompts: story.prompts,
       isContentSensitive: story.isContentSensitive,
-      contentWarnings: story.contentWarnings,
-      battleName: story.battleName,
-      wordCount: story.wordCount,
-      characterCount: story.characterCount,
-      status: story.status,
+      isShared: story.isShared,
+      system: {
+        HIVE: story.system.HIVE,
+        prompts: story.system.prompts,
+        contentWarnings: story.system.contentWarnings,
+        battleName: story.system.battleName,
+        wordCount: story.system.wordCount,
+        characterCount: story.system.characterCount,
+        status: story.system.status,
+        lastModified: story.system.lastModified,
+        modifiedBy: story.system.modifiedBy,
+        version: story.system.version,
+        tags: story.system.tags,
+        metadata: story.system.metadata,
+      },
     });
 
     console.log('Story added successfully:', {
       id: response.data.id,
       title: response.data.title,
-      HIVE: response.data.HIVE,
-      status: response.data.status,
-      wordCount: response.data.wordCount,
-      characterCount: response.data.characterCount,
-      feedback: response.data.feedback,
-      wins: response.data.wins,
-      losses: response.data.losses,
+      HIVE: response.data.system.HIVE,
+      status: response.data.system.status,
+      wordCount: response.data.system.wordCount,
+      characterCount: response.data.system.characterCount,
+      feedback: response.data.system.feedback,
+      wins: response.data.system.wins,
+      losses: response.data.system.losses,
+      lastModified: response.data.system.lastModified,
+      modifiedBy: response.data.system.modifiedBy,
+      version: response.data.system.version,
+      tags: response.data.system.tags,
+      metadata: response.data.system.metadata,
     });
     return response.data;
   } catch (error) {
     console.error('Error adding story:', error);
-    if (axios.isAxiosError(error)) {
-      console.error('Axios error details:', {
-        status: error.response?.status,
-        data: error.response?.data,
-        headers: error.response?.headers,
-      });
-    }
-    throw new Error('Failed to add story. Please try again.');
+    throw error;
   }
 };
 
@@ -88,51 +117,62 @@ export const updateStory = async (story: storySchema): Promise<storySchema> => {
     console.log('Attempting to update story:', {
       id: story.id,
       title: story.title,
-      HIVE: story.HIVE,
-      wordCount: story.wordCount,
-      characterCount: story.characterCount,
-      status: story.status,
-      prompts: story.prompts,
-      contentWarnings: story.contentWarnings,
+      HIVE: story.system.HIVE,
+      wordCount: story.system.wordCount,
+      characterCount: story.system.characterCount,
+      status: story.system.status,
+      prompts: story.system.prompts,
+      contentWarnings: story.system.contentWarnings,
       isContentSensitive: story.isContentSensitive,
+      lastModified: story.system.lastModified,
+      modifiedBy: story.system.modifiedBy,
+      version: story.system.version,
+      tags: story.system.tags,
+      metadata: story.system.metadata,
     });
 
     const response = await axiosInstance.put(`/stories/${story.id}`, {
       title: story.title,
       story: story.story,
       author: story.author,
-      HIVE: story.HIVE,
-      prompts: story.prompts,
       isContentSensitive: story.isContentSensitive,
-      contentWarnings: story.contentWarnings,
-      battleName: story.battleName,
-      wordCount: story.wordCount,
-      characterCount: story.characterCount,
-      status: story.status,
+      isShared: story.isShared,
+      system: {
+        HIVE: story.system.HIVE,
+        prompts: story.system.prompts,
+        contentWarnings: story.system.contentWarnings,
+        battleName: story.system.battleName,
+        wordCount: story.system.wordCount,
+        characterCount: story.system.characterCount,
+        status: story.system.status,
+        lastModified: story.system.lastModified,
+        modifiedBy: story.system.modifiedBy,
+        version: story.system.version,
+        tags: story.system.tags,
+        metadata: story.system.metadata,
+      },
     });
 
     console.log('Story updated successfully:', {
       id: response.data.id,
       title: response.data.title,
-      HIVE: response.data.HIVE,
-      status: response.data.status,
-      wordCount: response.data.wordCount,
-      characterCount: response.data.characterCount,
-      feedback: response.data.feedback,
-      wins: response.data.wins,
-      losses: response.data.losses,
+      HIVE: response.data.system.HIVE,
+      status: response.data.system.status,
+      wordCount: response.data.system.wordCount,
+      characterCount: response.data.system.characterCount,
+      feedback: response.data.system.feedback,
+      wins: response.data.system.wins,
+      losses: response.data.system.losses,
+      lastModified: response.data.system.lastModified,
+      modifiedBy: response.data.system.modifiedBy,
+      version: response.data.system.version,
+      tags: response.data.system.tags,
+      metadata: response.data.system.metadata,
     });
     return response.data;
   } catch (error) {
     console.error('Error updating story:', error);
-    if (axios.isAxiosError(error)) {
-      console.error('Axios error details:', {
-        status: error.response?.status,
-        data: error.response?.data,
-        headers: error.response?.headers,
-      });
-    }
-    throw new Error('Failed to update story. Please try again.');
+    throw error;
   }
 };
 
@@ -146,13 +186,14 @@ export const getStory = async (id: string): Promise<storySchema> => {
     console.log('Story fetched successfully:', {
       id: response.data.id,
       title: response.data.title,
-      HIVE: response.data.HIVE,
-      status: response.data.status,
-      wordCount: response.data.wordCount,
-      characterCount: response.data.characterCount,
-      feedback: response.data.feedback,
-      wins: response.data.wins,
-      losses: response.data.losses,
+      HIVE: response.data.system.HIVE,
+      status: response.data.system.status,
+      wordCount: response.data.system.wordCount,
+      characterCount: response.data.system.characterCount,
+      feedback: response.data.system.feedback,
+      wins: response.data.system.wins,
+      losses: response.data.system.losses,
+      isShared: response.data.isShared,
     });
     return response.data;
   } catch (error) {
