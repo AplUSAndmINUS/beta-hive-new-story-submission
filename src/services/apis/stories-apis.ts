@@ -17,17 +17,27 @@ export interface StoryData {
   title: string;
   story: string;
   author: string;
-  isContentSensitive: boolean;
+  isContentSensitive?: boolean;
   isShared: boolean;
 
   // System-controlled fields (protected from user modification)
   system: {
     HIVE: string;
     prompts: string[];
-    contentWarnings: string[];
+    contentWarnings: string[] | ['None'];
     battleName: string;
     wordCount: number;
-    status: string;
+    characterCount: number;
+    status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
+    feedback: {
+      id: string;
+      feedback: string;
+      isPublic: boolean;
+      isPositive: boolean;
+      isAnonymous: boolean;
+    }[];
+    wins: number;
+    losses: number;
     lastModified: string;
     modifiedBy: 'system' | 'admin';
     version: number;

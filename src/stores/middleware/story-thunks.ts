@@ -9,7 +9,12 @@ import { storySchema } from 'src/services/models/battleHIVE.types';
 // Thunk for adding a new story
 export const addStoryThunk = createAsyncThunk(
   'story/addStory',
-  async (story: Omit<storySchema, 'id' | 'feedback' | 'wins' | 'losses'>) => {
+  async (
+    story: Omit<
+      storySchema,
+      'id' | 'system.feedback' | 'system.wins' | 'system.losses'
+    >
+  ) => {
     console.log('Starting addStoryThunk with data:', {
       title: story.title,
       HIVE: story.system.HIVE,

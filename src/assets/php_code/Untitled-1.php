@@ -1,5 +1,3 @@
-<?php
-
 /**
  * HIVE-functions
  */
@@ -13,7 +11,7 @@
 
 // Enable CORS here when working with the local server
 function add_cors_http_header(){
-    header("Access-Control-Allow-Origin: https://staging-203c-battlehivefictioncom.wpcomstaging.com");
+    header("Access-Control-Allow-Origin: https://staging-203c-battlehivefictioncom.wpcomstaging.com/");
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS, DELETE, PUT");
     header("Access-Control-Allow-Headers: X-WP-Nonce, Content-Type");
 }
@@ -243,10 +241,16 @@ function add_story($request) {
         return new WP_Error('rest_forbidden', __('Nonce verification failed'), array('status' => 403));
     }
 
+    // Ensure user is logged in
+    if (!is_user_logged_in()) {
+        return new WP_Error('rest_forbidden', __('You must be logged in to submit a story'), array('status' => 403));
+    }
+
     $params = $request->get_json_params();
+    $current_user = wp_get_current_user();
 
     // Validate required fields
-    if (empty($params['title']) || empty($params['story']) || empty($params['author']) || 
+    if (empty($params['title']) || empty($params['story']) || 
         empty($params['system']['battleName']) || empty($params['system']['HIVE']) || 
         empty($params['system']['wordCount']) || empty($params['system']['characterCount']) || 
         empty($params['isShared'])) {
@@ -257,7 +261,7 @@ function add_story($request) {
     $post_data = array(
         'post_title' => sanitize_text_field($params['title']),
         'post_content' => wp_kses_post($params['story']),
-        'post_author' => absint($params['author']),
+        'post_author' => $current_user->ID, // Use current user's ID
         'post_type' => 'story',
         'post_status' => 'publish',
         'post_date' => current_time('mysql')
@@ -335,7 +339,7 @@ function add_story($request) {
         'id' => $post_id,
         'title' => $post_data['post_title'],
         'story' => $post_data['post_content'],
-        'author' => $post_data['post_author'],
+        'author' => $current_user->display_name, // Use current user's display name
         'isContentSensitive' => $params['isContentSensitive'] ?? false,
         'isShared' => $params['isShared'] ?? false,
         'system' => array(
@@ -350,7 +354,7 @@ function add_story($request) {
             'wins' => 0,
             'losses' => 0,
             'lastModified' => current_time('mysql'),
-            'modifiedBy' => 'system',
+            'modifiedBy' => $current_user->display_name, // Use current user's display name
             'version' => 1,
             'tags' => array(),
             'metadata' => array(
@@ -1068,14 +1072,16 @@ add_action('rest_api_init', function () {
     register_rest_route('custom/v1', '/stories', array(
         'methods' => 'GET',
         'callback' => 'get_all_stories',
-        'permission_callback' => '__return_true',
+        'permission_callback' => function () {
+            return is_user_logged_in();
+        },
     ));
 
     register_rest_route('custom/v1', '/stories', array(
         'methods' => 'POST',
         'callback' => 'add_story',
         'permission_callback' => function () {
-            return current_user_can('edit_posts');
+            return is_user_logged_in();
         },
     ));
 
@@ -1083,7 +1089,7 @@ add_action('rest_api_init', function () {
         'methods' => 'PUT',
         'callback' => 'update_story',
         'permission_callback' => function () {
-            return current_user_can('edit_posts');
+            return is_user_logged_in();
         },
         'args' => array(
             'id' => array(
@@ -1103,7 +1109,7 @@ add_action('rest_api_init', function () {
         'methods' => 'DELETE',
         'callback' => 'delete_story',
         'permission_callback' => function () {
-            return current_user_can('delete_posts');
+            return is_user_logged_in();
         },
         'args' => array(
             'id' => array(
@@ -1283,4 +1289,3 @@ add_action('rest_api_init', function () {
         'permission_callback' => '__return_true',
     ));
 });
-?>
