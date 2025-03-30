@@ -22,21 +22,32 @@ export const axiosInstance = axios.create({
   },
 });
 
+// Function to wait for the nonce to be available
+export const waitForNonce = async (): Promise<string> => {
+  return new Promise((resolve) => {
+    const checkNonce = () => {
+      if (typeof wpApiSettings !== 'undefined' && wpApiSettings.nonce) {
+        resolve(wpApiSettings.nonce);
+      } else {
+        setTimeout(checkNonce, 100); // Retry after 100ms
+      }
+    };
+    checkNonce();
+  });
+};
+
 // Function to get all game content to update the Redux store w/ wp_options table
 export const getAllGameContent =
   async (): Promise<gameSettingsSchema | null> => {
     try {
+      console.log('Fetching game content...');
+      const nonce = await waitForNonce();
+      console.log('Nonce:', nonce);
       const response = await axiosInstance.get('/game_content');
+      console.log('Response:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error fetching game content:', error);
-      if (axios.isAxiosError(error)) {
-        console.error('Request config:', error.config);
-        console.error('Response status:', error.response?.status);
-        console.error('Response data:', error.response?.data);
-      } else {
-        console.error('Unexpected error:', error);
-      }
       return null;
     }
   };

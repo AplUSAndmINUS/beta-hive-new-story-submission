@@ -12,6 +12,7 @@ import {
 } from 'src/stores/reducers/story-submission';
 import { CONTENT_WARNINGS } from 'src/services/constants/admin-constants';
 import useNavigation from 'src/utils/hooks/useNavigation';
+import { addStory } from 'src/services/apis/stories-apis';
 
 const MAX_CONTENT_WARNINGS = 4;
 
@@ -89,15 +90,17 @@ export const ContentWarnings: React.FC = () => {
       title: storyTitle,
       story: storySubmission,
       author: 'Author ID', // This should come from user authentication
-      betaHive: betaHIVESelection,
+      HIVE: betaHIVESelection,
       prompts: promptSelections,
-      contentWarning: contentWarning,
-      contentSensitivities: contentSensitivities,
-      date: moment().toISOString(),
+      isContentSensitive: contentWarning === 'Yes',
+      contentWarnings: contentSensitivities,
+      battleName: 'Battle of the HIVEs', // This should come from admin settings
+      wordCount: storySubmission.trim().split(/\s+/).length,
       status: 'draft',
     };
 
     try {
+      await addStory(storyData);
       navigate('Confirmation');
     } catch (error) {
       console.error('Error submitting story:', error);

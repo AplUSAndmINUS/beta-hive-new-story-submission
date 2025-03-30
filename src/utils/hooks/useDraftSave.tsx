@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useAppDispatch } from 'src/stores/store';
+import { useAppDispatch, useAppSelector } from 'src/stores/store';
 import {
   setStorySubmission,
   setStoryTitle,
@@ -17,6 +17,12 @@ export const useDraftSave = (
   const [error, setError] = React.useState<string | null>(null);
   const [draftId, setDraftId] = React.useState<number | null>(null);
   const dispatch = useAppDispatch();
+
+  // Get the current user's HIVE selection and prompts from Redux store
+  const { betaHIVESelection, promptSelections } = useAppSelector(
+    (state) => state.storySubmission
+  );
+  const { battleName } = useAppSelector((state) => state.adminSubmission);
 
   React.useEffect(() => {
     if (storyText.trim() === '' || storyTitle.trim() === '') {
@@ -41,18 +47,14 @@ export const useDraftSave = (
         const storyData = {
           title: storyTitle,
           story: storyText,
-          status: 'draft', // WordPress uses lowercase 'draft'
-          author: 'current_user_id', // You'll need to get this from your auth system
-          HIVE: '', // This will be set when the story is submitted
-          prompts: [], // This will be set when the story is submitted
+          author: 'current_user_id', // This should come from your auth system
+          HIVE: betaHIVESelection || '', // Use selected HIVE if available
+          prompts: promptSelections || [], // Use selected prompts if available
           isContentSensitive: false,
           contentWarnings: ['None'],
-          battleName: 'micro-fiction',
+          battleName: battleName || 'Battle of the HIVEs',
           wordCount: storyText.trim().split(/\s+/).length,
-          characterCount: storyText.length,
-          feedback: [],
-          wins: 0,
-          losses: 0,
+          status: 'draft',
         };
 
         let response;
@@ -83,7 +85,15 @@ export const useDraftSave = (
     const timer = setTimeout(handleSave, 2500); // Auto-save after 2.5 seconds of inactivity
 
     return () => clearTimeout(timer); // Clear timeout if user types again
-  }, [storyText, storyTitle, dispatch, saveAction, draftId]);
+  }, [
+    storyText,
+    storyTitle,
+    dispatch,
+    saveAction,
+    draftId,
+    betaHIVESelection,
+    promptSelections,
+  ]);
 
   return { isLoading, isSaved, error, draftId };
 };

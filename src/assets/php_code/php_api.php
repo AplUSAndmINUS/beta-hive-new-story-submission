@@ -244,7 +244,9 @@ function add_story($request) {
     $params = $request->get_json_params();
 
     // Validate required fields
-    if (empty($params['title']) || empty($params['story']) || empty($params['author']) || empty($params['battleName']) || empty($params['hive'])) {
+    if (empty($params['title']) || empty($params['story']) || empty($params['author']) || 
+        empty($params['battleName']) || empty($params['HIVE']) || empty($params['wordCount']) || 
+        empty($params['characterCount'])) {
         return new WP_Error('missing_fields', __('Missing required fields'), array('status' => 400));
     }
 
@@ -273,7 +275,7 @@ function add_story($request) {
     wp_set_post_terms($post_id, $battle_name_tag, 'post_tag', true);
     
     // Add HIVE as tag
-    $hive_tag = sanitize_text_field($params['hive']);
+    $hive_tag = sanitize_text_field($params['HIVE']);
     wp_set_post_terms($post_id, $hive_tag, 'post_tag', true);
 
     // Add content warnings as tags if they exist
@@ -290,6 +292,7 @@ function add_story($request) {
         'contentWarnings' => 'sanitize_text_field',
         'battleName' => 'sanitize_text_field',
         'wordCount' => 'absint',
+        'characterCount' => 'absint',
         'status' => 'sanitize_text_field',
         'feedback' => 'sanitize_text_field',
         'wins' => 'absint',
@@ -314,13 +317,18 @@ function add_story($request) {
         'title' => $post_data['post_title'],
         'story' => $post_data['post_content'],
         'author' => $post_data['post_author'],
-        'date' => $post_data['post_date'],
-        'battleName' => $battle_name_tag,
-        'hive' => $hive_tag,
-        'contentWarnings' => $content_warnings ?? array(),
-        'wins' => $params['wins'] ?? 0,
-        'losses' => $params['losses'] ?? 0,
-        'isContentSensitive' => $params['isContentSensitive'] ?? false
+        'HIVE' => $params['HIVE'],
+        'prompts' => $params['prompts'] ?? array(),
+        'isContentSensitive' => $params['isContentSensitive'] ?? false,
+        'contentWarnings' => $params['contentWarnings'] ?? array(),
+        'battleName' => $params['battleName'],
+        'wordCount' => $params['wordCount'],
+        'characterCount' => $params['characterCount'],
+        'status' => $params['status'] ?? 'draft',
+        'feedback' => null,
+        'wins' => 0,
+        'losses' => 0,
+        'date' => $post_data['post_date']
     );
 
     return new WP_REST_Response($story, 201);
@@ -343,7 +351,9 @@ function update_story($request) {
     }
 
     // Validate required fields
-    if (empty($params['title']) || empty($params['story']) || empty($params['author']) || empty($params['battleName']) || empty($params['hive'])) {
+    if (empty($params['title']) || empty($params['story']) || empty($params['author']) || 
+        empty($params['battleName']) || empty($params['HIVE']) || empty($params['wordCount']) || 
+        empty($params['characterCount'])) {
         return new WP_Error('missing_fields', __('Missing required fields'), array('status' => 400));
     }
 
@@ -371,7 +381,7 @@ function update_story($request) {
     wp_set_post_terms($id, $battle_name_tag, 'post_tag', true);
     
     // Update HIVE tag
-    $hive_tag = sanitize_text_field($params['hive']);
+    $hive_tag = sanitize_text_field($params['HIVE']);
     wp_set_post_terms($id, $hive_tag, 'post_tag', true);
 
     // Update content warnings tags if they exist
@@ -390,6 +400,7 @@ function update_story($request) {
         'contentWarnings' => 'sanitize_text_field',
         'battleName' => 'sanitize_text_field',
         'wordCount' => 'absint',
+        'characterCount' => 'absint',
         'status' => 'sanitize_text_field',
         'feedback' => 'sanitize_text_field',
         'wins' => 'absint',
@@ -414,13 +425,18 @@ function update_story($request) {
         'title' => $post_data['post_title'],
         'story' => $post_data['post_content'],
         'author' => $post_data['post_author'],
-        'modified' => $post_data['post_modified'],
-        'battleName' => $battle_name_tag,
-        'hive' => $hive_tag,
-        'contentWarnings' => $content_warnings ?? array(),
+        'HIVE' => $params['HIVE'],
+        'prompts' => $params['prompts'] ?? array(),
+        'isContentSensitive' => $params['isContentSensitive'] ?? false,
+        'contentWarnings' => $params['contentWarnings'] ?? array(),
+        'battleName' => $params['battleName'],
+        'wordCount' => $params['wordCount'],
+        'characterCount' => $params['characterCount'],
+        'status' => $params['status'] ?? 'draft',
+        'feedback' => $params['feedback'] ?? null,
         'wins' => $params['wins'] ?? 0,
         'losses' => $params['losses'] ?? 0,
-        'isContentSensitive' => $params['isContentSensitive'] ?? false
+        'modified' => $post_data['post_modified']
     );
 
     return new WP_REST_Response($story, 200);
