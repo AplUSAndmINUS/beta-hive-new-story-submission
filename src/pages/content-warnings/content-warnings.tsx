@@ -31,6 +31,7 @@ export const ContentWarnings: React.FC = () => {
     story,
     title,
     isShared,
+    author,
   } = useAppSelector((state) => state.storySubmission);
 
   const {
@@ -100,7 +101,7 @@ export const ContentWarnings: React.FC = () => {
       // User-editable fields
       title,
       story,
-      author: 'current_user_id', // This should come from user authentication
+      author: author || 'anonymous', // Use author from store or fallback to anonymous
       isContentSensitive,
       isShared,
 
@@ -122,6 +123,9 @@ export const ContentWarnings: React.FC = () => {
           lastAdminUpdate: null,
           adminId: null,
         },
+        feedback: [], // Initialize empty feedback array
+        wins: 0, // Initialize wins count
+        losses: 0, // Initialize losses count
       },
     };
 

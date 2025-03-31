@@ -21,8 +21,9 @@ export const useDraftSave = (
 
   // Get the current user's HIVE selection and prompts from Redux store
   const {
-    system: { HIVE, prompts },
+    system: { HIVE, prompts, contentWarnings },
     isShared,
+    author,
   } = useAppSelector((state) => state.storySubmission);
   const { battleName } = useAppSelector((state) => state.adminSubmission);
 
@@ -49,14 +50,17 @@ export const useDraftSave = (
         const storyData: CreateStorySchema = {
           title: storyTitle,
           story: storyText,
-          author: 'current_user_id', // This should come from your auth system
+          author: author || 'anonymous', // Use author from store or fallback to anonymous
           isContentSensitive: undefined,
           isShared: isShared || false,
           system: {
             HIVE: HIVE || '',
             prompts: prompts || [],
-            contentWarnings: ['None'],
+            contentWarnings: contentWarnings || ['None'], // Use contentWarnings from store
             battleName: battleName,
+            feedback: [],
+            wins: 0,
+            losses: 0,
             wordCount: storyText.trim().split(/\s+/).length,
             characterCount: storyText.length,
             status: 'Draft' as const,
@@ -112,6 +116,8 @@ export const useDraftSave = (
     storyText,
     storyTitle,
     isShared,
+    author,
+    contentWarnings,
   ]);
 
   return { isLoading, isSaved, error, draftId };

@@ -61,7 +61,28 @@ export interface storySchema {
 
 // Type for creating a new story (omits fields handled by backend)
 export type CreateStorySchema = Omit<storySchema, 'id'> & {
-  system: Omit<storySchema['system'], 'feedback' | 'wins' | 'losses'> & {
+  system: {
+    HIVE: betaHIVESchema['name'];
+    prompts: promptsSchema['name'][];
+    contentWarnings: contentWarningsSchema['name'][] | ['None'];
+    battleName: string;
+    wordCount: number;
+    characterCount: number;
     status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
+    feedback: Pick<
+      feedbackSchema,
+      'id' | 'feedback' | 'isPublic' | 'isPositive' | 'isAnonymous'
+    >[];
+    wins: number;
+    losses: number;
+    lastModified: string;
+    modifiedBy: 'system' | 'admin';
+    version: number;
+    tags: string[];
+    metadata: {
+      isUserEditable: boolean;
+      lastAdminUpdate: string | null;
+      adminId: string | null;
+    };
   };
 };
