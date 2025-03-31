@@ -12,9 +12,7 @@ import { calendarSchema } from 'src/services/models/calendar.types';
 import { contentWarningsSchema } from 'src/services/models/content-warnings.types';
 import { promptsSchema } from 'src/services/models/prompt-selection.types';
 import { gameSettingsSchema } from 'src/services/models/betaHIVE-selection.types';
-import {
-  fetchAdminData,
-} from 'src/stores/middleware/admin-thunks';
+import { fetchAdminData } from 'src/stores/middleware/admin-thunks';
 
 interface AdminSubmissionState {
   battleName: string;
@@ -138,6 +136,22 @@ const adminSubmissionSlice = createSlice({
         state.isSuccess = true;
         state.isError = false;
         state.adminData = action.payload;
+
+        // Update all state values with the fetched data
+        state.battleName = action.payload.battleName;
+        state.betaHIVECount = action.payload.betaHIVECount;
+        state.betaHIVEs = action.payload.hives;
+        state.calendarEventCount = action.payload.calendarEventCount;
+        state.calendarEvents = action.payload.calendarEvents;
+        state.contentWarningCount = action.payload.contentWarningsCount;
+        state.contentWarnings = action.payload.contentWarnings;
+        state.countdownDate = action.payload.countDownDate;
+        state.minPromptSelections = action.payload.minPromptSelections;
+        state.numOfLosses = action.payload.numOfLosses;
+        state.promptsCount = action.payload.promptCount;
+        state.prompts = action.payload.prompts;
+        state.minWordCount = action.payload.minWordCount;
+        state.maxWordCount = action.payload.maxWordCount;
       })
       .addCase(fetchAdminData.rejected, (state, action) => {
         state.isLoading = false;

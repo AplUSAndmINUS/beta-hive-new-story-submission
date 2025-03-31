@@ -23,20 +23,6 @@ export const BetaHIVESelection: React.FC = () => {
   }, [HIVE]);
 
   React.useEffect(() => {
-    // try { /*** TROUBLESHOOTING STEPS lines 28-41 ***/
-    //   dispatch(fetchAdminData()).then(() => {
-    //     if (adminData) {
-    //       console.log('Admin data fetched: ', adminData);
-    //     }
-    //   });
-    // } catch (error) {
-    //   console.error('Error fetching admin data:', error);
-    //   if (axios.isAxiosError(error)) {
-    //     console.error('Request config:', error.config);
-    //     console.error('Response status:', error.response?.status);
-    //     console.error('Response data:', error.response?.data);
-    //   }
-    // }
     dispatch(fetchAdminData());
   }, [dispatch]);
 

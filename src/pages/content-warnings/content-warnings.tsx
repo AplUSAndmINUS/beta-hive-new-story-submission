@@ -28,12 +28,14 @@ export const ContentWarnings: React.FC = () => {
     system: { HIVE, prompts, contentWarnings },
     story,
     title,
+    isShared,
   } = useAppSelector((state) => state.storySubmission);
 
   const {
     minWordCount,
     maxWordCount,
     contentWarnings: availableWarnings,
+    battleName,
   } = useAppSelector((state) => state.adminSubmission);
 
   React.useEffect(() => {
@@ -96,15 +98,15 @@ export const ContentWarnings: React.FC = () => {
       // User-editable fields
       title,
       story,
-      author: 'Author ID', // This should come from user authentication
+      author: 'current_user_id', // This should come from user authentication
       isContentSensitive,
-      isShared: false, // User's sharing preference
+      isShared,
 
       // System-controlled fields (protected from user modification)
       system: {
         HIVE,
         prompts,
-        battleName: 'Battle of the HIVEs', // This should come from admin settings
+        battleName,
         contentWarnings: contentWarnings as string[],
         wordCount: story.trim().split(/\s+/).length,
         characterCount: story.length,

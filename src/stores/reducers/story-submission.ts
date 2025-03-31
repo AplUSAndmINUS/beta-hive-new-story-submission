@@ -45,7 +45,7 @@ const initialState: StorySubmissionState = {
   // System-controlled fields (protected from user modification)
   system: {
     HIVE: '',
-    battleName: 'Battle of the HIVEs', // This should come from admin settings
+    battleName: '', // This will be set from admin settings
     prompts: [],
     contentWarnings: [],
     wordCount: 0,

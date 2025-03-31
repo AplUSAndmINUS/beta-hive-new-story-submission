@@ -51,7 +51,7 @@ export const useDraftSave = (
             HIVE: HIVE || '',
             prompts: prompts || [],
             contentWarnings: ['None'],
-            battleName: battleName || 'Battle of the HIVEs',
+            battleName: battleName,
             wordCount: storyText.trim().split(/\s+/).length,
             characterCount: storyText.length,
             status: 'Draft' as const,

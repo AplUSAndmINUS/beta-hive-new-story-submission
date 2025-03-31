@@ -10,6 +10,7 @@ import {
   setStory,
   setTitle,
   setIsShared,
+  setBattleName,
 } from 'src/stores/reducers/story-submission';
 import useDraftSave from 'src/utils/hooks/useDraftSave';
 import useWordCount from 'src/utils/hooks/useWordCount';
@@ -23,7 +24,7 @@ export const StorySubmission: React.FC = () => {
   const { story, title, isShared } = useAppSelector(
     (state) => state.storySubmission
   );
-  const { minWordCount, maxWordCount } = useAppSelector(
+  const { minWordCount, maxWordCount, battleName } = useAppSelector(
     (state) => state.adminSubmission
   );
 
@@ -45,6 +46,12 @@ export const StorySubmission: React.FC = () => {
       dispatch(fetchAdminData());
     }
   }, [dispatch, minWordCount, maxWordCount]);
+
+  React.useEffect(() => {
+    if (battleName) {
+      dispatch(setBattleName(battleName));
+    }
+  }, [battleName, dispatch]);
 
   React.useEffect(() => {
     // Update Redux store when local state changes
