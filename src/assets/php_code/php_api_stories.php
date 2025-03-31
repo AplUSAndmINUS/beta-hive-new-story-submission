@@ -1,3 +1,4 @@
+<?php
 /**
  * HIVE-functions
  */
@@ -21,17 +22,17 @@ function enqueue_react_app() {
 	$is_local = defined('WP_ENV') && WP_ENV == 'local';
 
     // Enqueue story-submission app
-    if (!wp_script_is('beta-hive-story-submission', 'enqueued')) {
+    if (!wp_script_is('beta-hive-new-story-submission', 'enqueued')) {
         wp_enqueue_script(
             'beta-hive-new-story-submission',
-            $is_local ? 'http://localhost:3000/static/js/bundle.js' : get_template_directory_uri() . '/htdocs/wp-content/reactpress/apps/beta-hive-story-submission/build/static/js/main.3f655f80.js',
+            $is_local ? 'http://localhost:3000/static/js/bundle.js' : get_template_directory_uri() . '/htdocs/wp-content/reactpress/apps/beta-hive-new-story-submission/build/static/js/main.3f655f80.js',
             array(),
             null,
             true
         );
         wp_enqueue_style(
            'beta-hive-new-story-submission',
-            $is_local ? 'http://localhost:3000/static/css/main.css' : get_template_directory_uri() . '/htdocs/wp-content/reactpress/apps/beta-hive-story-submission/build/static/css/main.f2ed6db1.css',
+            $is_local ? 'http://localhost:3000/static/css/main.css' : get_template_directory_uri() . '/htdocs/wp-content/reactpress/apps/beta-hive-new-story-submission/build/static/css/main.f2ed6db1.css',
             array(),
             null
         );
@@ -75,8 +76,8 @@ function enqueue_react_app() {
 // Function to generate and pass nonce to the front-end
 function pass_nonce_to_react_app() {
     // Generate a nonce and pass it to the front-end for story-submission
-    if (wp_script_is('beta-hive-story-submission', 'enqueued')) {
-        wp_localize_script('beta-hive-story-submission', 'wpApiSettings', array(
+    if (wp_script_is('beta-hive-new-story-submission', 'enqueued')) {
+        wp_localize_script('beta-hive-new-story-submission', 'wpApiSettings', array(
             'nonce' => wp_create_nonce('wp_rest')
         ));
     }
@@ -769,7 +770,12 @@ function initialize_beta_hive_options() {
 add_action('after_setup_theme', 'initialize_beta_hive_options');
 
 // get all game content
-function get_all_game_content() {
+function get_all_game_content($request) {
+    // Verify nonce
+    if (!wp_verify_nonce($request->get_header('X-WP-Nonce'), 'wp_rest')) {
+        return new WP_Error('rest_forbidden', __('Nonce verification failed'), array('status' => 403));
+    }
+
     $content_warnings = get_all_content_warnings();
     $prompts = get_all_prompts();
     $hives = get_all_hives();
@@ -784,8 +790,6 @@ function get_all_game_content() {
     $beta_hive_count = get_beta_hive_count();
     $calendar_event_count = get_calendar_event_count();
     $prompts_count = get_prompts_count();
-
-
 
     $game_content = array(
         'contentWarnings' => $content_warnings,
@@ -1289,3 +1293,4 @@ add_action('rest_api_init', function () {
         'permission_callback' => '__return_true',
     ));
 });
+?>

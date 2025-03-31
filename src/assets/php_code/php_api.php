@@ -765,7 +765,12 @@ function initialize_beta_hive_options() {
 add_action('after_setup_theme', 'initialize_beta_hive_options');
 
 // get all game content
-function get_all_game_content() {
+function get_all_game_content($request) {
+    // Verify nonce
+    if (!wp_verify_nonce($request->get_header('X-WP-Nonce'), 'wp_rest')) {
+        return new WP_Error('rest_forbidden', __('Nonce verification failed'), array('status' => 403));
+    }
+
     $content_warnings = get_all_content_warnings();
     $prompts = get_all_prompts();
     $hives = get_all_hives();
@@ -780,8 +785,6 @@ function get_all_game_content() {
     $beta_hive_count = get_beta_hive_count();
     $calendar_event_count = get_calendar_event_count();
     $prompts_count = get_prompts_count();
-
-
 
     $game_content = array(
         'contentWarnings' => $content_warnings,

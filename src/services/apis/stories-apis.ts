@@ -59,7 +59,7 @@ export const addStory = async (
 ): Promise<storySchema> => {
   try {
     await waitForNonce();
-    console.log('Attempting to add story:', {
+    console.log('Attempting to add new story:', {
       title: story.title,
       HIVE: story.system.HIVE,
       wordCount: story.system.wordCount,
@@ -68,35 +68,9 @@ export const addStory = async (
       prompts: story.system.prompts,
       contentWarnings: story.system.contentWarnings,
       isContentSensitive: story.isContentSensitive,
-      lastModified: story.system.lastModified,
-      modifiedBy: story.system.modifiedBy,
-      version: story.system.version,
-      tags: story.system.tags,
-      metadata: story.system.metadata,
     });
 
-    const response = await axiosInstance.post('/stories', {
-      title: story.title,
-      story: story.story,
-      author: story.author,
-      isContentSensitive: story.isContentSensitive,
-      isShared: story.isShared,
-      system: {
-        HIVE: story.system.HIVE,
-        prompts: story.system.prompts,
-        contentWarnings: story.system.contentWarnings,
-        battleName: story.system.battleName,
-        wordCount: story.system.wordCount,
-        characterCount: story.system.characterCount,
-        status: story.system.status,
-        lastModified: story.system.lastModified,
-        modifiedBy: story.system.modifiedBy,
-        version: story.system.version,
-        tags: story.system.tags,
-        metadata: story.system.metadata,
-      },
-    });
-
+    const response = await axiosInstance.post('/stories', story);
     console.log('Story added successfully:', {
       id: response.data.id,
       title: response.data.title,
@@ -107,16 +81,19 @@ export const addStory = async (
       feedback: response.data.system.feedback,
       wins: response.data.system.wins,
       losses: response.data.system.losses,
-      lastModified: response.data.system.lastModified,
-      modifiedBy: response.data.system.modifiedBy,
-      version: response.data.system.version,
-      tags: response.data.system.tags,
-      metadata: response.data.system.metadata,
+      isShared: response.data.isShared,
     });
     return response.data;
   } catch (error) {
     console.error('Error adding story:', error);
-    throw error;
+    if (axios.isAxiosError(error)) {
+      console.error('Axios error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers,
+      });
+    }
+    throw new Error('Failed to add story. Please try again.');
   }
 };
 
@@ -134,35 +111,9 @@ export const updateStory = async (story: storySchema): Promise<storySchema> => {
       prompts: story.system.prompts,
       contentWarnings: story.system.contentWarnings,
       isContentSensitive: story.isContentSensitive,
-      lastModified: story.system.lastModified,
-      modifiedBy: story.system.modifiedBy,
-      version: story.system.version,
-      tags: story.system.tags,
-      metadata: story.system.metadata,
     });
 
-    const response = await axiosInstance.put(`/stories/${story.id}`, {
-      title: story.title,
-      story: story.story,
-      author: story.author,
-      isContentSensitive: story.isContentSensitive,
-      isShared: story.isShared,
-      system: {
-        HIVE: story.system.HIVE,
-        prompts: story.system.prompts,
-        contentWarnings: story.system.contentWarnings,
-        battleName: story.system.battleName,
-        wordCount: story.system.wordCount,
-        characterCount: story.system.characterCount,
-        status: story.system.status,
-        lastModified: story.system.lastModified,
-        modifiedBy: story.system.modifiedBy,
-        version: story.system.version,
-        tags: story.system.tags,
-        metadata: story.system.metadata,
-      },
-    });
-
+    const response = await axiosInstance.put(`/stories/${story.id}`, story);
     console.log('Story updated successfully:', {
       id: response.data.id,
       title: response.data.title,
@@ -173,16 +124,19 @@ export const updateStory = async (story: storySchema): Promise<storySchema> => {
       feedback: response.data.system.feedback,
       wins: response.data.system.wins,
       losses: response.data.system.losses,
-      lastModified: response.data.system.lastModified,
-      modifiedBy: response.data.system.modifiedBy,
-      version: response.data.system.version,
-      tags: response.data.system.tags,
-      metadata: response.data.system.metadata,
+      isShared: response.data.isShared,
     });
     return response.data;
   } catch (error) {
     console.error('Error updating story:', error);
-    throw error;
+    if (axios.isAxiosError(error)) {
+      console.error('Axios error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers,
+      });
+    }
+    throw new Error('Failed to update story. Please try again.');
   }
 };
 

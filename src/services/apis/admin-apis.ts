@@ -16,18 +16,23 @@ const baseURL = process.env.REACT_APP_STAGING_API_URL || '/wp-json/custom/v1';
 export const axiosInstance = axios.create({
   baseURL: baseURL,
   headers: {
-    'X-WP-Nonce':
-      typeof wpApiSettings !== 'undefined' ? wpApiSettings.nonce : localNonce,
     'Content-Type': 'application/json',
   },
 });
+
+// Function to update the nonce in the axios instance
+export const updateAxiosNonce = (nonce: string) => {
+  axiosInstance.defaults.headers.common['X-WP-Nonce'] = nonce;
+};
 
 // Function to wait for the nonce to be available
 export const waitForNonce = async (): Promise<string> => {
   return new Promise((resolve) => {
     const checkNonce = () => {
       if (typeof wpApiSettings !== 'undefined' && wpApiSettings.nonce) {
-        resolve(wpApiSettings.nonce);
+        const nonce = wpApiSettings.nonce;
+        updateAxiosNonce(nonce);
+        resolve(nonce);
       } else {
         setTimeout(checkNonce, 100); // Retry after 100ms
       }
