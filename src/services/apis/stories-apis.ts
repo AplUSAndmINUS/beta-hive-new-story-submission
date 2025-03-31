@@ -1,7 +1,10 @@
 import axios from 'axios';
 
 import { axiosInstance, waitForNonce } from './admin-apis';
-import { storySchema } from 'src/services/models/battleHIVE.types';
+import {
+  storySchema,
+  CreateStorySchema,
+} from 'src/services/models/battleHIVE.types';
 
 // Declare the WordPress API settings type
 declare global {
@@ -52,10 +55,7 @@ export interface StoryData {
 
 // Function to add a story to the database
 export const addStory = async (
-  story: Omit<
-    storySchema,
-    'id' | 'system.feedback' | 'system.wins' | 'system.losses'
-  >
+  story: CreateStorySchema
 ): Promise<storySchema> => {
   try {
     await waitForNonce();

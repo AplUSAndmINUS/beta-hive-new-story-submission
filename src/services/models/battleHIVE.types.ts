@@ -58,3 +58,10 @@ export interface storySchema {
     };
   };
 }
+
+// Type for creating a new story (omits fields handled by backend)
+export type CreateStorySchema = Omit<storySchema, 'id'> & {
+  system: Omit<storySchema['system'], 'feedback' | 'wins' | 'losses'> & {
+    status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
+  };
+};

@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import moment from 'moment';
+// import moment from 'moment';
 
 // import { BETAHIVE_SELECTIONS } from 'src/services/constants/betaHIVE-constants';
-import {
-  CALENDAR_EVENTS,
-  CONTENT_WARNINGS,
-  PROMPT_SELECTIONS,
-} from 'src/services/constants/admin-constants';
+// import {
+//   CALENDAR_EVENTS,
+//   CONTENT_WARNINGS,
+//   PROMPT_SELECTIONS,
+// } from 'src/services/constants/admin-constants';
 import { betaHIVESchema } from 'src/services/models/betaHIVE-selection.types';
 import { calendarSchema } from 'src/services/models/calendar.types';
 import { contentWarningsSchema } from 'src/services/models/content-warnings.types';
@@ -37,39 +37,20 @@ interface AdminSubmissionState {
 }
 
 const initialState: AdminSubmissionState = {
-  battleName: 'Battle of the HIVEs',
-  betaHIVECount: 3,
-  betaHIVEs: [
-    {
-      id: '1',
-      name: 'Bumble HIVE',
-      imgSource: 'hive1.png',
-      description: 'Cozy/Romance/Meet Cute',
-    },
-    {
-      id: '2',
-      name: 'Yellow Jacket HIVE',
-      imgSource: 'hive2.png',
-      description: 'History/Mystery/Adventure',
-    },
-    {
-      id: '3',
-      name: 'The Chaos HIVE',
-      imgSource: 'hive3.png',
-      description: 'Inanimate Objects/Fantasical Creatures/Otherworld',
-    },
-  ],
-  calendarEventCount: 4,
-  calendarEvents: [...CALENDAR_EVENTS],
-  contentWarningCount: 4,
-  contentWarnings: [...CONTENT_WARNINGS],
-  countdownDate: moment('2025-04-14').format('MM-DD-YYYY'),
-  minPromptSelections: 2,
-  numOfLosses: 3,
-  promptsCount: 10,
-  prompts: [...PROMPT_SELECTIONS],
-  minWordCount: 250,
-  maxWordCount: 1000,
+  battleName: '',
+  betaHIVECount: 0,
+  betaHIVEs: [],
+  calendarEventCount: 0,
+  calendarEvents: [],
+  contentWarningCount: 0,
+  contentWarnings: [],
+  countdownDate: '',
+  minPromptSelections: 0,
+  numOfLosses: 0,
+  promptsCount: 0,
+  prompts: [],
+  minWordCount: 0,
+  maxWordCount: 0,
   error: null,
   isLoading: false,
   isSuccess: false,

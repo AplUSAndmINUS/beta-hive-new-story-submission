@@ -1,7 +1,19 @@
 import { feedbackSchema } from 'src/services/models/battleHIVE.types';
 import { calendarSchema } from 'src/services/models/calendar.types';
-import { characterSchema, promptsSchema, settingSchema } from 'src/services/models/prompt-selection.types';
+import {
+  characterSchema,
+  promptsSchema,
+  settingSchema,
+} from 'src/services/models/prompt-selection.types';
 import { contentWarningsSchema } from 'src/services/models/content-warnings.types';
+
+// These types are kept for type checking, but the actual data will come from the admin API
+export type CalendarEvent = calendarSchema;
+export type Character = characterSchema;
+export type ContentWarning = contentWarningsSchema;
+export type Prompt = promptsSchema;
+export type Setting = settingSchema;
+export type Feedback = feedbackSchema;
 
 export const CALENDAR_EVENTS: calendarSchema[] = [
   {
@@ -18,7 +30,8 @@ export const CALENDAR_EVENTS: calendarSchema[] = [
   {
     name: 'Story Submission',
     date: '2025-04-12',
-    description: "This is the final day where you cannot edit your story. Ensure it's done by this date!",
+    description:
+      "This is the final day where you cannot edit your story. Ensure it's done by this date!",
   },
   {
     name: 'The battleHIVE!',

@@ -8,10 +8,12 @@ import { useAppDispatch, useAppSelector } from 'src/stores/store';
 import {
   setContentWarnings,
   setContentSensitive,
+  setStatus,
 } from 'src/stores/reducers/story-submission';
 import { fetchAdminData } from 'src/stores/middleware/admin-thunks';
+import { addStoryThunk } from 'src/stores/middleware/story-thunks';
 import useNavigation from 'src/utils/hooks/useNavigation';
-import { addStory } from 'src/services/apis/stories-apis';
+import { CreateStorySchema } from 'src/services/models/battleHIVE.types';
 
 const MAX_CONTENT_WARNINGS = 4;
 
@@ -94,7 +96,7 @@ export const ContentWarnings: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const storyData = {
+    const storyData: CreateStorySchema = {
       // User-editable fields
       title,
       story,
@@ -110,7 +112,7 @@ export const ContentWarnings: React.FC = () => {
         contentWarnings: contentWarnings as string[],
         wordCount: story.trim().split(/\s+/).length,
         characterCount: story.length,
-        status: 'Draft' as const,
+        status: 'Submitted' as const,
         lastModified: new Date().toISOString(),
         modifiedBy: 'system' as const,
         version: 1,
@@ -120,14 +122,12 @@ export const ContentWarnings: React.FC = () => {
           lastAdminUpdate: null,
           adminId: null,
         },
-        feedback: [], // Initialize empty feedback array
-        wins: 0, // Initialize wins count
-        losses: 0, // Initialize losses count
       },
     };
 
     try {
-      await addStory(storyData);
+      await dispatch(addStoryThunk(storyData)).unwrap();
+      dispatch(setStatus('Submitted'));
       navigate('Confirmation');
     } catch (error) {
       console.error('Error submitting story:', error);

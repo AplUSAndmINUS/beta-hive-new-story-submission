@@ -4,17 +4,15 @@ import {
   updateStory,
   getStory,
 } from 'src/services/apis/stories-apis';
-import { storySchema } from 'src/services/models/battleHIVE.types';
+import {
+  CreateStorySchema,
+  storySchema,
+} from 'src/services/models/battleHIVE.types';
 
 // Thunk for adding a new story
 export const addStoryThunk = createAsyncThunk(
   'story/addStory',
-  async (
-    story: Omit<
-      storySchema,
-      'id' | 'system.feedback' | 'system.wins' | 'system.losses'
-    >
-  ) => {
+  async (story: CreateStorySchema) => {
     console.log('Starting addStoryThunk with data:', {
       title: story.title,
       HIVE: story.system.HIVE,
@@ -24,6 +22,9 @@ export const addStoryThunk = createAsyncThunk(
       prompts: story.system.prompts,
       contentWarnings: story.system.contentWarnings,
       isContentSensitive: story.isContentSensitive,
+      isShared: story.isShared,
+      author: story.author,
+      battleName: story.system.battleName,
     });
 
     try {
@@ -38,6 +39,7 @@ export const addStoryThunk = createAsyncThunk(
         feedback: response.system.feedback,
         wins: response.system.wins,
         losses: response.system.losses,
+        isShared: response.isShared,
       });
       return response;
     } catch (error) {
@@ -61,6 +63,9 @@ export const updateStoryThunk = createAsyncThunk(
       prompts: story.system.prompts,
       contentWarnings: story.system.contentWarnings,
       isContentSensitive: story.isContentSensitive,
+      isShared: story.isShared,
+      author: story.author,
+      battleName: story.system.battleName,
     });
 
     try {
@@ -75,6 +80,7 @@ export const updateStoryThunk = createAsyncThunk(
         feedback: response.system.feedback,
         wins: response.system.wins,
         losses: response.system.losses,
+        isShared: response.isShared,
       });
       return response;
     } catch (error) {
@@ -102,6 +108,7 @@ export const getStoryThunk = createAsyncThunk(
         feedback: response.system.feedback,
         wins: response.system.wins,
         losses: response.system.losses,
+        isShared: response.isShared,
       });
       return response;
     } catch (error) {
