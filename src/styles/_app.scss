@@ -59,7 +59,8 @@ div.w-75 > .card:hover,
   transform: translate(3px, -3px);
   transition: all 0.2s ease-in-out;
   cursor: pointer;
-  background-color: rgba(179, 199, 255, 0.25);
+  background-color: rgba(179, 199, 255, 0.25) !important;
+  border: 1px solid rgb(13, 110, 253) !important;
 
   @media prefers-dark-interface {
     box-shadow: 0 4px 8px rgba(244, 244, 244, 0.2);
