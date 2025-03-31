@@ -7,3 +7,34 @@ export const getAssetPath = (path: string) => {
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
   return `${BASE_PATH}/${cleanPath}`;
 };
+
+// Base URLs for different environments
+const BASE_URLS = {
+  staging: 'https://staging-203c-battlehivefictioncom.wpcomstaging.com',
+  production: 'https://battlehivefiction.com',
+  local: 'http://localhost:3000',
+};
+
+// Determine the current environment
+const getCurrentEnvironment = () => {
+  const hostname = window.location.hostname;
+  if (hostname.includes('staging')) return 'staging';
+  if (hostname.includes('battlehivefiction.com')) return 'production';
+  return 'local';
+};
+
+// Get the base URL for the current environment
+export const getBaseUrl = () => {
+  const env = getCurrentEnvironment();
+  return BASE_URLS[env];
+};
+
+// Helper function to get the full media URL
+export const getMediaUrl = (path: string) => {
+  if (getCurrentEnvironment() === 'local') {
+    // For local development, load from the public/images directory
+    return `/images/${path}`;
+  }
+  const baseUrl = getBaseUrl();
+  return `${baseUrl}/wp-content/uploads/${path}`;
+};

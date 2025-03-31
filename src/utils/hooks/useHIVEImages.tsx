@@ -1,28 +1,22 @@
-import React from 'react';
-import { useAppSelector } from 'src/stores/store';
-import { getAssetPath } from 'src/config/app-config';
+import { useSelector } from 'react-redux';
+import { RootState } from 'src/stores/store';
+import { getMediaUrl } from 'src/config/app-config';
 
-interface Image {
+interface HIVE {
   name: string;
-  imgSource: string;
   description: string;
+  imgSource: string;
 }
 
 export const useHIVEImages = () => {
-  const betaHIVEs = useAppSelector((state) => state.adminSubmission.betaHIVEs);
-  const [images, setImages] = React.useState<Image[]>([]);
+  const { betaHIVEs } = useSelector(
+    (state: RootState) => state.adminSubmission
+  );
 
-  React.useEffect(() => {
-    const imageArray: Image[] = betaHIVEs.map((hive) => ({
-      name: hive.name,
-      description: hive.description,
-      imgSource: getAssetPath(`images/${hive.imgSource}`),
-    }));
-
-    setImages(imageArray);
-  }, [betaHIVEs]);
-
-  return images;
+  return betaHIVEs.map((hive: HIVE) => ({
+    ...hive,
+    imgSource: getMediaUrl(`2025/03/${hive.imgSource}.png`),
+  }));
 };
 
 export default useHIVEImages;
