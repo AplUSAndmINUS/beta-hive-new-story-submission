@@ -15,7 +15,7 @@ export const useHIVEImages = () => {
 
   return betaHIVEs.map((hive: HIVE) => ({
     ...hive,
-    imgSource: getMediaUrl(`2025/03/${hive.imgSource}.png`),
+    imgSource: getMediaUrl(`2025/03/${hive.imgSource}`),
   }));
 };
 
