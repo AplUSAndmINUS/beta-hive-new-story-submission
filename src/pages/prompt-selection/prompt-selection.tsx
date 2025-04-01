@@ -9,9 +9,9 @@ import { fetchAdminData } from 'src/stores/middleware/admin-thunks';
 
 export const PromptSelection: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { system: { prompts: selectedPrompts } } = useAppSelector(
-    (state) => state.storySubmission
-  );
+  const {
+    system: { prompts: selectedPrompts },
+  } = useAppSelector((state) => state.storySubmission);
   const { minPromptSelections, prompts } = useAppSelector(
     (state) => state.adminSubmission
   );
@@ -58,11 +58,6 @@ export const PromptSelection: React.FC = () => {
           <h1 className='bd-title pb-2 mt-4'>
             Choose {minPromptSelections} prompts
           </h1>
-          <p className='text-muted pb-2 mt-2 fs-5'>
-            {getSelectionText()}
-            <br />
-            You'll use these to create your story.
-          </p>
         </div>
         <Selections />
       </div>
@@ -102,6 +97,7 @@ export const PromptSelection: React.FC = () => {
           isNextDisabled={selectedPrompts.length < minPromptSelections}
           backNavigation='Beta HIVE Selection'
           nextNavigation='Story Submission'
+          selectionText={`${getSelectionText()}. You'll use these to create your story.`}
         />
       </div>
     </div>
