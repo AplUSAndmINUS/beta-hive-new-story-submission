@@ -34,6 +34,9 @@ export const StorySubmission: React.FC = () => {
   const [storyTitleState, setStoryTitleState] = React.useState(title || '');
   const [hasStoryBeenTouched, setHasStoryBeenTouched] = React.useState(false);
   const [hasTitleBeenTouched, setHasTitleBeenTouched] = React.useState(false);
+  const { availableStoryImages } = useAppSelector(
+    (state) => state.storySubmission
+  );
 
   const { error, isLoading, isSaved } = useDraftSave(
     storyText,

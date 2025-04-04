@@ -1,5 +1,4 @@
 import React from 'react';
-// import axios from 'axios';
 
 import InputSelectionCard from 'src/components/form-elements/input/input-selection';
 import NavigateButtons from 'src/components/navigate-buttons/navigate-buttons';
