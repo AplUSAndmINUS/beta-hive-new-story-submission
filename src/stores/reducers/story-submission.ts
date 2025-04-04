@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+import { StoryImage } from 'src/utils/hooks/useHIVEImages';
+
 // Define the state interface based on story schema
 interface StorySubmissionState {
   // User-editable fields
@@ -22,6 +24,7 @@ interface StorySubmissionState {
     modifiedBy: 'system' | 'admin';
     version: number;
     tags: string[];
+    storyImages: StoryImage[];
     metadata: {
       isUserEditable: boolean;
       lastAdminUpdate: string | null;
@@ -55,6 +58,7 @@ const initialState: StorySubmissionState = {
     modifiedBy: 'system',
     version: 0,
     tags: [],
+    storyImages: [],
     metadata: {
       isUserEditable: false,
       lastAdminUpdate: null,
@@ -90,7 +94,9 @@ const storySubmissionSlice = createSlice({
     setBattleName(state, action: PayloadAction<string>) {
       state.system.battleName = action.payload;
     },
-
+    setStoryImage(state, action: PayloadAction<StoryImage[]>) {
+      state.system.storyImages = action.payload;
+    },
     // Content and warnings actions
     setContentSensitive(state, action: PayloadAction<boolean>) {
       state.isContentSensitive = action.payload;
@@ -156,20 +162,21 @@ export const {
   setTitle,
   setStory,
   setAuthor,
-  setHIVE,
   setBattleName,
+  setBetaHIVEConfirmation,
   setContentSensitive,
   setContentWarnings,
-  setPrompts,
-  setStatus,
-  setBetaHIVEConfirmation,
-  setStorySubmission,
-  setIsShared,
+  setHIVE,
   setLastModified,
   setModifiedBy,
-  setVersion,
-  setTags,
+  setIsShared,
   setMetadata,
+  setPrompts,
+  setStatus,
+  setStorySubmission,
+  setStoryImage,
+  setTags,
+  setVersion,
   resetStorySubmission,
 } = storySubmissionSlice.actions;
 

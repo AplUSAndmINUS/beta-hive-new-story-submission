@@ -12,11 +12,13 @@ import { setHIVE } from 'src/stores/reducers/story-submission';
 export const BetaHIVESelection: React.FC = () => {
   const [isNextDisabled, setIsNextDisabled] = React.useState<boolean>(true);
   const dispatch = useAppDispatch();
-  const images = useHIVEImages();
+  const images = useHIVEImages({ isAdmin: true });
   const { minPromptSelections } = useAppSelector(
     (state) => state.adminSubmission
   );
-  const { system: { HIVE } } = useAppSelector((state) => state.storySubmission);
+  const {
+    system: { HIVE },
+  } = useAppSelector((state) => state.storySubmission);
 
   React.useEffect(() => {
     if (HIVE && HIVE !== '') setIsNextDisabled(false);

@@ -1,21 +1,33 @@
-import { useSelector } from 'react-redux';
 import { RootState } from 'src/stores/store';
 import { getMediaUrl } from 'src/config/app-config';
+import { useAppSelector } from 'src/stores/store';
 
-interface HIVE {
-  name: string;
-  description: string;
+export interface StoryImage {
   imgSource: string;
 }
 
-export const useHIVEImages = () => {
-  const { betaHIVEs } = useSelector(
+interface useHIVEImagesProps {
+  isAdmin?: boolean;
+  isStory?: boolean;
+}
+
+export const useHIVEImages = ({
+  isAdmin = false,
+  isStory = false,
+}: useHIVEImagesProps) => {
+  const { betaHIVEs } = useAppSelector(
     (state: RootState) => state.adminSubmission
   );
+  const {
+    system: { storyImages },
+  } = useAppSelector((state: RootState) => state.storySubmission);
 
-  return betaHIVEs.map((hive: HIVE) => ({
-    ...hive,
-    imgSource: getMediaUrl(`2025/03/${hive.imgSource}`),
+  const sourceArray = isAdmin ? betaHIVEs : isStory ? storyImages : [];
+  const yearMonth = isAdmin ? '2025/03' : '2025/04'; // hardcoded month and year URL from WP's Media Library
+
+  return sourceArray.map((item) => ({
+    ...item,
+    imgSource: getMediaUrl(`${yearMonth}/${item.imgSource}`),
   }));
 };
 
