@@ -50,6 +50,7 @@ export interface StoryData {
       lastAdminUpdate: string | null;
       adminId: string | null;
     };
+    storyImage: string;
   };
 }
 
@@ -68,6 +69,7 @@ export const addStory = async (
       prompts: story.system.prompts,
       contentWarnings: story.system.contentWarnings,
       isContentSensitive: story.isContentSensitive,
+      storyImage: story.system.storyImage,
     });
 
     const response = await axiosInstance.post('/stories', story);
@@ -82,6 +84,7 @@ export const addStory = async (
       wins: response.data.system.wins,
       losses: response.data.system.losses,
       isShared: response.data.isShared,
+      storyImage: response.data.system.storyImage,
     });
     return response.data;
   } catch (error) {
@@ -111,6 +114,7 @@ export const updateStory = async (story: storySchema): Promise<storySchema> => {
       prompts: story.system.prompts,
       contentWarnings: story.system.contentWarnings,
       isContentSensitive: story.isContentSensitive,
+      storyImage: story.system.storyImage,
     });
 
     const response = await axiosInstance.put(`/stories/${story.id}`, story);
@@ -125,6 +129,7 @@ export const updateStory = async (story: storySchema): Promise<storySchema> => {
       wins: response.data.system.wins,
       losses: response.data.system.losses,
       isShared: response.data.isShared,
+      storyImage: response.data.system.storyImage,
     });
     return response.data;
   } catch (error) {

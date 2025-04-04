@@ -51,6 +51,7 @@ export interface storySchema {
     modifiedBy: 'system' | 'admin';
     version: number;
     tags: string[];
+    storyImage: string;
     metadata: {
       isUserEditable: boolean;
       lastAdminUpdate: string | null;
@@ -79,6 +80,7 @@ export type CreateStorySchema = Omit<storySchema, 'id'> & {
     modifiedBy: 'system' | 'admin';
     version: number;
     tags: string[];
+    storyImage: string;
     metadata: {
       isUserEditable: boolean;
       lastAdminUpdate: string | null;

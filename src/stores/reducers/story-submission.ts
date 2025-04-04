@@ -1,7 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { StoryImage } from 'src/utils/hooks/useHIVEImages';
-
 // Define the state interface based on story schema
 interface StorySubmissionState {
   // User-editable fields
@@ -24,13 +22,16 @@ interface StorySubmissionState {
     modifiedBy: 'system' | 'admin';
     version: number;
     tags: string[];
-    storyImages: StoryImage[];
+    storyImage: string; // Selected story image
     metadata: {
       isUserEditable: boolean;
       lastAdminUpdate: string | null;
       adminId: string | null;
     };
   };
+
+  // Available story images for selection
+  availableStoryImages: string[];
 
   // UI state
   isBetaHIVEConfirmation: boolean;
@@ -58,7 +59,7 @@ const initialState: StorySubmissionState = {
     modifiedBy: 'system',
     version: 0,
     tags: [],
-    storyImages: [],
+    storyImage: '', // Initially no image selected
     metadata: {
       isUserEditable: false,
       lastAdminUpdate: null,
@@ -66,13 +67,21 @@ const initialState: StorySubmissionState = {
     },
   },
 
+  // Available story images for selection--hard coded due to WP Media Library URL structure
+  availableStoryImages: [
+    'storyImg1.png',
+    'storyImg2.png',
+    'storyImg3.png',
+    'storyImg4.png',
+  ],
+
   // UI state
   isBetaHIVEConfirmation: false,
   isStorySubmission: false,
 };
 
 const storySubmissionSlice = createSlice({
-  name: 'storySubmissionReducer',
+  name: 'storySubmission',
   initialState,
   reducers: {
     // Core story data actions
@@ -94,8 +103,8 @@ const storySubmissionSlice = createSlice({
     setBattleName(state, action: PayloadAction<string>) {
       state.system.battleName = action.payload;
     },
-    setStoryImage(state, action: PayloadAction<StoryImage[]>) {
-      state.system.storyImages = action.payload;
+    setStoryImage(state, action: PayloadAction<string>) {
+      state.system.storyImage = action.payload;
     },
     // Content and warnings actions
     setContentSensitive(state, action: PayloadAction<boolean>) {

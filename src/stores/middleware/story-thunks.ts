@@ -25,6 +25,7 @@ export const addStoryThunk = createAsyncThunk(
       isShared: story.isShared,
       author: story.author,
       battleName: story.system.battleName,
+      storyImage: story.system.storyImage,
     });
 
     try {
@@ -40,6 +41,7 @@ export const addStoryThunk = createAsyncThunk(
         wins: response.system.wins,
         losses: response.system.losses,
         isShared: response.isShared,
+        storyImage: response.system.storyImage,
       });
       return response;
     } catch (error) {
@@ -52,24 +54,25 @@ export const addStoryThunk = createAsyncThunk(
 // Thunk for updating an existing story
 export const updateStoryThunk = createAsyncThunk(
   'story/updateStory',
-  async (story: storySchema) => {
+  async ({ id, story }: { id: string; story: Partial<CreateStorySchema> }) => {
     console.log('Starting updateStoryThunk with data:', {
-      id: story.id,
+      id,
       title: story.title,
-      HIVE: story.system.HIVE,
-      wordCount: story.system.wordCount,
-      characterCount: story.system.characterCount,
-      status: story.system.status,
-      prompts: story.system.prompts,
-      contentWarnings: story.system.contentWarnings,
+      HIVE: story.system?.HIVE,
+      wordCount: story.system?.wordCount,
+      characterCount: story.system?.characterCount,
+      status: story.system?.status,
+      prompts: story.system?.prompts,
+      contentWarnings: story.system?.contentWarnings,
       isContentSensitive: story.isContentSensitive,
       isShared: story.isShared,
       author: story.author,
-      battleName: story.system.battleName,
+      battleName: story.system?.battleName,
+      storyImage: story.system?.storyImage,
     });
 
     try {
-      const response = await updateStory(story);
+      const response = await updateStory(id, story);
       console.log('updateStoryThunk completed successfully:', {
         id: response.id,
         title: response.title,
@@ -81,6 +84,7 @@ export const updateStoryThunk = createAsyncThunk(
         wins: response.system.wins,
         losses: response.system.losses,
         isShared: response.isShared,
+        storyImage: response.system.storyImage,
       });
       return response;
     } catch (error) {
