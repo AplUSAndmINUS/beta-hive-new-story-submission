@@ -139,6 +139,10 @@ export const StorySubmission: React.FC = () => {
     setHasTitleBeenTouched(true);
   };
 
+  const handleImageClick = (image: string) => {
+    console.log('Image clicked:', image);
+  };
+
   return (
     <div className='container-fluid'>
       <div className='row d-flex justify-content-between align-items-center'>
@@ -153,6 +157,7 @@ export const StorySubmission: React.FC = () => {
         </div>
         <Selections />
       </div>
+      <h3 className='bd-title pb-2 mt-4'>Pick your story's title and image</h3>
       <div className='row'>
         <InputType
           name='storyTitle'
@@ -170,18 +175,30 @@ export const StorySubmission: React.FC = () => {
         />
         <div className='d-flex flex-row justify-content-between align-items-center w-100'>
           <div className='col-12'>
-            <h3 className='bd-title pb-2 mt-4'>Pick your story's image</h3>
-            <div className='d-flex flex-row justify-content-between align-items-center w-100'>
-            {availableStoryImages.map((image) => {
-              return (
-                <div className='col-12 w-25' key={image}>
-                  <img width={100} height={100} src={getMediaUrl(image)} alt={image} />
+            <div className='row row-cols-2 row-cols-md-4 g-3'>
+              {availableStoryImages.map((image) => (
+                <div
+                  className='col genre-image genre-square'
+                  key={image}
+                >
+                  <img
+                    className='img-fluid'
+                    src={getMediaUrl(image)}
+                    alt={image}
+                    onClick={() => handleImageClick(image)}
+                  />
                 </div>
-                );
-              })}
+              ))}
             </div>
           </div>
-          <div className='col-12'>
+        </div>
+      </div>
+      <div className='row'>
+        <div className='d-flex flex-row justify-content-between align-items-center'>
+          <div className='col-12 w-50'>
+            <h4 className='pb-2 mt-4 ms-1'>Write your story</h4>
+          </div>
+          <div className='mt-4'>
             <div className='form-check form-switch'>
               <label className='form-check-label' htmlFor='storySharingSwitch'>
                 {isShared
@@ -199,9 +216,6 @@ export const StorySubmission: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
-      <div className='row'>
-        <h4 className='pb-2 mt-3 ms-1'>Story</h4>
         <textarea
           className={`form-control ms-3 ${hasStoryBeenTouched && validationErrors.some((err) => err.includes('Story')) ? 'is-invalid' : ''}`}
           rows={10}

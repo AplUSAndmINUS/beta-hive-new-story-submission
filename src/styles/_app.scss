@@ -89,14 +89,22 @@ div.card-body > h5.card-title > label > span {
 }
 
 .genre-image {
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
+  position: relative;
+  transition: transform 0.2s;
+  cursor: pointer;
 }
 
-.genre-square:hover .genre-image {
+.genre-image:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.genre-square img {
+  border-radius: 8px;
+  border: 2px solid transparent;
+}
+
+.genre-square:hover img {
+  border-color: #007bff;
 }
 
 // battleHIVE.tsx

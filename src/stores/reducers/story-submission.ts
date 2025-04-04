@@ -44,7 +44,7 @@ const initialState: StorySubmissionState = {
   story: '',
   author: '', // This should come from user authentication
   isContentSensitive: undefined,
-  isShared: false,
+  isShared: true,
 
   // System-controlled fields (protected from user modification)
   system: {
