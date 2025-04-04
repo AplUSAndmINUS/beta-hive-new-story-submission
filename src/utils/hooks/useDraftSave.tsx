@@ -21,7 +21,7 @@ export const useDraftSave = (
 
   // Get the current user's HIVE selection and prompts from Redux store
   const {
-    system: { HIVE, prompts, contentWarnings },
+    system: { HIVE, prompts, contentWarnings, storyImage },
     isShared,
     author,
   } = useAppSelector((state) => state.storySubmission);
@@ -66,6 +66,7 @@ export const useDraftSave = (
             status: 'Draft' as const,
             lastModified: new Date().toISOString(),
             modifiedBy: 'system' as const,
+            storyImage: storyImage || '',
             version: 1,
             tags: [],
             metadata: {
@@ -80,7 +81,7 @@ export const useDraftSave = (
         if (draftId) {
           // Update existing draft
           response = await dispatch(
-            updateStoryThunk({ ...storyData, id: draftId })
+            updateStoryThunk({ id: draftId, story: storyData })
           ).unwrap();
         } else {
           // Create new draft

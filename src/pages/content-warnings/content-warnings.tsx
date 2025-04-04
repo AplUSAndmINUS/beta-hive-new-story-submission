@@ -27,7 +27,7 @@ export const ContentWarnings: React.FC = () => {
 
   const {
     isContentSensitive,
-    system: { HIVE, prompts, contentWarnings },
+    system: { HIVE, prompts, contentWarnings, storyImage },
     story,
     title,
     isShared,
@@ -117,7 +117,8 @@ export const ContentWarnings: React.FC = () => {
         lastModified: new Date().toISOString(),
         modifiedBy: 'system' as const,
         version: 1,
-        tags: [], // Tags can only be modified by admin
+        tags: [], // Tags can only be modified by admin'
+        storyImage: storyImage || '',
         metadata: {
           isUserEditable: false,
           lastAdminUpdate: null,

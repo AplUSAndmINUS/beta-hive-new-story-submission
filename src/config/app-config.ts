@@ -15,6 +15,12 @@ const BASE_URLS = {
   local: 'http://localhost:3000',
 };
 
+const WP_MEDIA_URLS = {
+  staging: `${BASE_URLS.staging}/wp-content/uploads`,
+  production: `${BASE_URLS.production}/wp-content/uploads`,
+  local: `${BASE_PATH}/images`, // Use BASE_PATH for local development
+};
+
 // Determine the current environment
 const getCurrentEnvironment = () => {
   const hostname = window.location.hostname;
@@ -31,10 +37,9 @@ export const getBaseUrl = () => {
 
 // Helper function to get the full media URL
 export const getMediaUrl = (path: string) => {
-  if (getCurrentEnvironment() === 'local') {
-    // For local development, load from the public/images directory
-    return `/images/${path}`;
+  const env = getCurrentEnvironment();
+  if (process.env.NODE_ENV === 'development') {
+    return `${WP_MEDIA_URLS[env]}/${path.split('/').pop()}`; // Just use filename in dev
   }
-  const baseUrl = getBaseUrl();
-  return `${baseUrl}/wp-content/uploads/${path}`;
+  return `${WP_MEDIA_URLS[env]}/${path}`; // Full path in prod
 };

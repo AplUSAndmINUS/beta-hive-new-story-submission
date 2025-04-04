@@ -7,6 +7,7 @@ import { fetchAdminData } from 'src/stores/middleware/admin-thunks';
 import { useHIVEImages } from 'src/utils/hooks/useHIVEImages';
 import { useAppDispatch, useAppSelector } from 'src/stores/store';
 import { setHIVE } from 'src/stores/reducers/story-submission';
+import { betaHIVESchema } from 'src/services/models/betaHIVE-selection.types';
 
 export const BetaHIVESelection: React.FC = () => {
   const [isNextDisabled, setIsNextDisabled] = React.useState<boolean>(true);
@@ -29,7 +30,9 @@ export const BetaHIVESelection: React.FC = () => {
 
   const handleHIVESelection = (genre: string) => {
     // Validate that the selected genre exists in the available images
-    const isValidHIVE = images.some((image) => image.name === genre);
+    const isValidHIVE = images.some(
+      (image) => typeof image === 'object' && image.name === genre
+    );
     if (isValidHIVE) {
       dispatch(setHIVE(genre));
       setIsNextDisabled(false);
@@ -59,14 +62,14 @@ export const BetaHIVESelection: React.FC = () => {
       <div className='row'>
         {images.map((image) => (
           <InputSelectionCard
-            key={image.name}
+            key={(image as betaHIVESchema).name}
             handleSelection={handleHIVESelection}
             isDisabled={false}
-            name={image.name}
-            label={image.name}
+            name={(image as betaHIVESchema).name}
+            label={(image as betaHIVESchema).name}
             inputType='radio'
-            imgSource={image.imgSource}
-            description={image.description}
+            imgSource={(image as betaHIVESchema).imgSource}
+            description={(image as betaHIVESchema).description}
             isBetaHIVE
           />
         ))}

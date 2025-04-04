@@ -101,23 +101,26 @@ export const addStory = async (
 };
 
 // Function to update existing story
-export const updateStory = async (story: storySchema): Promise<storySchema> => {
+export const updateStory = async (
+  id: string,
+  story: Partial<storySchema>
+): Promise<storySchema> => {
   try {
     await waitForNonce();
     console.log('Attempting to update story:', {
-      id: story.id,
+      id,
       title: story.title,
-      HIVE: story.system.HIVE,
-      wordCount: story.system.wordCount,
-      characterCount: story.system.characterCount,
-      status: story.system.status,
-      prompts: story.system.prompts,
-      contentWarnings: story.system.contentWarnings,
+      HIVE: story.system?.HIVE,
+      wordCount: story.system?.wordCount,
+      characterCount: story.system?.characterCount,
+      status: story.system?.status,
+      prompts: story.system?.prompts,
+      contentWarnings: story.system?.contentWarnings,
       isContentSensitive: story.isContentSensitive,
-      storyImage: story.system.storyImage,
+      storyImage: story.system?.storyImage,
     });
 
-    const response = await axiosInstance.put(`/stories/${story.id}`, story);
+    const response = await axiosInstance.put(`/stories/${id}`, story);
     console.log('Story updated successfully:', {
       id: response.data.id,
       title: response.data.title,

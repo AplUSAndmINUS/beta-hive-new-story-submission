@@ -4,10 +4,7 @@ import {
   updateStory,
   getStory,
 } from 'src/services/apis/stories-apis';
-import {
-  CreateStorySchema,
-  storySchema,
-} from 'src/services/models/battleHIVE.types';
+import { CreateStorySchema } from 'src/services/models/battleHIVE.types';
 
 // Thunk for adding a new story
 export const addStoryThunk = createAsyncThunk(
